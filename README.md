@@ -66,8 +66,8 @@ we scarcely take time to do it by iteration. Usually, Scala help
 building strong and distributed reliable architecture. Here, this is a
 way to go deep further into this.
 
-Since the critical path is the move generation, we could take several
-approaches to optimize that:
+Since the critical path is the move generation (and playing a move), we
+could take several approaches to optimize that:
 
 -   improve the algorithm: generate move by difference: We use the
     previous generated moves and the current move to deduced the new
@@ -116,11 +116,11 @@ moves skipped, per second
 To be able to stop and start engine on demand, we will continue using
 the Akka actor model.
 
-chess rules:
+Chess rules:
 ------------
 
-We need to manage clocks with 2 timer per chess game
+We need to manage clocks with 2 timers per chess game
 
-Adding the rule of draw in case the same position is repeated 3 times.
-This will be useful for the evaluation of a position. It requires
-transposition tables and efficient position encoding.
+We will consider the rule of draw in case the same position is repeated
+3 times. This will be useful for the evaluation of a position. It
+requires transposition tables and efficient position encoding.

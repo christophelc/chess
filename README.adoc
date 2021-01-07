@@ -48,7 +48,7 @@ TODO
 Calculating 100 000 positions per second would be great (x 50). The idea is not to compete against Stockfish but to improve sufficiently 
 the computation without taking too much time on tricks only valid for chess intelligence. Improving Scala performance looks very interesting since we scarcely take time to do it by iteration. Usually, Scala help building strong and distributed reliable architecture. Here, this is a way to go deep further into this.
 
-Since the critical path is the move generation, we could take several approaches to optimize that:
+Since the critical path is the move generation (and playing a move), we could take several approaches to optimize that:
 
  - improve the algorithm: generate move by difference: We use the previous generated moves and the current move to deduced the new possible moves.
  - improve the data structure and computation time by using bitboards: we reduce the memory footprint and use 64 bit native cpu operations. 
@@ -81,10 +81,10 @@ To be able to stop and start engine on demand, we will continue using the Akka a
 
 
 
-=== chess rules:
+=== Chess rules:
 
-We need to manage clocks with 2 timer per chess game
+We need to manage clocks with 2 timers per chess game
 
-Adding the rule of draw in case the same position is repeated 3 times. This will be useful for the evaluation of a position. It requires transposition tables and 
+We will consider the rule of draw in case the same position is repeated 3 times. This will be useful for the evaluation of a position. It requires transposition tables and 
 efficient position encoding.
 
