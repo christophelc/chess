@@ -1,0 +1,126 @@
+Description
+===========
+
+This is a chess game. The aim of this program is for (my) educational
+purpose. This can lead us to study different fields:
+
+-   performance with Scala: code efficicency and memory footprint
+
+-   distributed calculus
+
+-   AI (neuronal networks)
+
+-   distributed AI (communication between AI)
+
+It supports FEN notation (not fully tested).
+
+Preface
+=======
+
+This is a first version of a chess game with engines. There are:
+
+-   a checkmate engine
+
+-   a minimax engine
+
+-   an alphabeta engine
+
+The 3 x position repetition will be implemented once we will have
+encoded a position in the good way. We don’t yet manage clocks but it’s
+not a big deal. The level is given by the depth limit and not by a time
+limit.
+
+Technical stack
+===============
+
+The stack used is based on scala and the akka actor model.
+
+The idea behind akka actor would be:
+
+-   to build a distributed engine
+
+-   to be able later to try another approaches like distrbuted
+    artificial intelligences.
+
+Performances
+============
+
+For the moment, the idea was to have a clear design with trait and actor
+model. I did not take time to optimize anything.
+
+The performances are very poor. Currently, this chess program computes
+2000 positions per second whereas Stockfish calculates 70 millions
+positions per second.
+
+TODO
+====
+
+Improve performances
+--------------------
+
+Calculating 100 000 positions per second would be great (x 50). The idea
+is not to compete against Stockfish but to improve sufficiently the
+computation without taking too much time on tricks only valid for chess
+intelligence. Improving Scala performance looks very interesting since
+we scarcely take time to do it by iteration. Usually, Scala help
+building strong and distributed reliable architecture. Here, this is a
+way to go deep further into this.
+
+Since the critical path is the move generation, we could take several
+approaches to optimize that:
+
+-   improve the algorithm: generate move by difference: We use the
+    previous generated moves and the current move to deduced the new
+    possible moves.
+
+-   improve the data structure and computation time by using bitboards:
+    we reduce the memory footprint and use 64 bit native cpu operations.
+
+Combining this two approaches looks possible.
+
+-   Add a new engine
+
+Add an engine capable of managing final game. For that, it requires we
+are able to encode position and be able to manage the 3x position
+repetition rule.
+
+Algorithm improvement
+---------------------
+
+We will add:
+
+-   transposition tables
+
+-   quiescence
+
+-   AI:
+
+    1.  neuronal network (deep learning) with auto learning capacity
+
+    2.  make plans, try to reach them: give the availability to check if
+        some of them are done or not, and only then give a score.
+
+    3.  to be defined: distributed algorithms with different skills and
+        make them communicate. This can be several neuronal networks.
+
+UCI
+---
+
+The use of UCI is a standard and will make it possible for this chess
+engine to compete with another one. Moreover, we would be able to play
+with a GUI.
+
+We will add command to show statistics: moves generated, moves studies,
+moves skipped, per second
+
+To be able to stop and start engine on demand, we will continue using
+the Akka actor model.
+
+chess rules:
+------------
+
+We need to manage clocks with 2 timer per chess game
+
+Adding the rule of draw in case the same position is repeated 3 times.
+This will be useful for the evaluation of a position. It requires
+transposition tables and efficient position encoding.
