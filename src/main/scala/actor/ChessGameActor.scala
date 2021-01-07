@@ -1,9 +1,12 @@
 package actor
 
+import actor.StatActor.ClearStat
 import actor.TournamentActor.EndOfGame
 import akka.actor.{ Actor, ActorLogging, ActorRef, PoisonPill, Props }
 import model.Chessboard.EndGame
 import model._
+
+import scala.concurrent.duration.DurationInt
 
 object ChessGameActor {
   case object StartClock
@@ -11,11 +14,11 @@ object ChessGameActor {
   case class Play(color: Color)
   case class GameOver(endGame: EndGame)
 
-  def apply(chessGame: ChessGame, arbitrator: ActorRef): Props =
-    Props(new ChessGameActor(chessGame, arbitrator))
+  def apply(chessGame: ChessGame, arbitrator: ActorRef, statActor: ActorRef): Props =
+    Props(new ChessGameActor(chessGame, arbitrator, statActor))
 }
 
-class ChessGameActor(var game: ChessGame, arbitrator: ActorRef) extends Actor with ActorLogging {
+class ChessGameActor(var game: ChessGame, arbitrator: ActorRef, statActor: ActorRef) extends Actor with ActorLogging {
   import ChessGameActor._
 
   def receive: PartialFunction[Any, Unit] = {
@@ -44,6 +47,7 @@ class ChessGameActor(var game: ChessGame, arbitrator: ActorRef) extends Actor wi
 
     case Play(whichPlayer: Color) =>
       game = game.play(whichPlayer)
+      statActor ! ClearStat
       game.tools.chessboard.endGame match {
         case Some(endGame) =>
           self ! GameOver(endGame)

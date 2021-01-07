@@ -3,7 +3,6 @@ package model
 import dto.CodecBitmap
 import model.Chessboard.EndGame
 import model.Piece.idRook
-import model.board.BaseMove.EmptyMove
 
 trait Chessboard {
   type Moves

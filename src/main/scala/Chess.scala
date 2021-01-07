@@ -25,7 +25,7 @@ object Chess extends App {
   //  val players = Seq(
   //    PlayerComputer("1", new EngineV1),
   //    PlayerReal("me"))
-  val tournamentActor = Tournament(Arbitrator("arbitrator1"), players, TimerBlitz())
+  val tournamentActor = Tournament(Arbitrator("arbitrator1"), players, TimerBlitz(), myStatActor)
 
   tournamentActor ! Ready
   //val nTurn = 10

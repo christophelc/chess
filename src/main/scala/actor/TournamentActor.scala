@@ -6,7 +6,7 @@ import model.Chessboard.EndGame
 import model.{ ChessGame, Color, LogBook }
 
 object TournamentActor {
-  case class SetGames(game: Seq[ChessGame], arbitrator: ActorRef)
+  case class SetGames(game: Seq[ChessGame], arbitrator: ActorRef, statActor: ActorRef)
   case object Ready
   case class EndOfGame(
     game: String,
@@ -21,10 +21,10 @@ class TournamentActor extends Actor with ActorLogging {
   var games: Seq[ActorRef] = Nil
 
   def receive: PartialFunction[Any, Unit] = {
-    case SetGames(games: Seq[ChessGame], arbitrator: ActorRef) =>
+    case SetGames(games: Seq[ChessGame], arbitrator: ActorRef, statActor: ActorRef) =>
       log.debug(s"set ${games.size} game(s)")
       this.games = games.map(game => {
-        val chessGameActor = ChessGameActor(game, arbitrator)
+        val chessGameActor = ChessGameActor(game, arbitrator, statActor)
         log.debug(s"creating actor ${game.name}")
         context.actorOf(chessGameActor, game.name)
       })

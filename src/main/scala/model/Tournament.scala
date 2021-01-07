@@ -7,7 +7,7 @@ import akka.actor.{ ActorRef, ActorSystem, Props }
 object Tournament {
   val system = ActorSystem("games")
 
-  def apply(arbitrator: Arbitrator, players: Seq[Player], timer: Timer): ActorRef = {
+  def apply(arbitrator: Arbitrator, players: Seq[Player], timer: Timer, statActor: ActorRef): ActorRef = {
     require(players.length % 2 == 0)
 
     val tournamentActor = system.actorOf(Props[TournamentActor](), "arbitratorActor")
@@ -18,7 +18,7 @@ object Tournament {
         playerWhite = playerWhite,
         timer = timer)
     }.toSeq
-    tournamentActor ! SetGames(games, tournamentActor)
+    tournamentActor ! SetGames(games, tournamentActor, statActor)
     tournamentActor
   }
 }
