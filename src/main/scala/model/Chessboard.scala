@@ -61,6 +61,7 @@ trait Chessboard {
 
 object Chessboard {
   trait EndGame
+  case object EndGame50MoveNoTakenPieceNoPawnMove extends EndGame
   case object EndGameByRepetition extends EndGame
   case object EndGameByInsufficientMaterial extends EndGame
   case object EndgameByCheckPat extends EndGame

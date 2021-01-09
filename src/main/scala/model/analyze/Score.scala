@@ -4,7 +4,7 @@ import model.Piece.pawnInitialRow
 import model.{ Chessboard, _ }
 import model.analyze.Strategy._
 import model.board.BaseMove.Moves
-import model.board.{ Bishop, ChessboardImpl, Knight, Pawn, Queen, Rook }
+import model.board.{ Bishop, ChessboardImpl, Knight, Pawn, Queen, Rook, SquareXY }
 
 object Score {
 
@@ -57,10 +57,10 @@ object Score {
       val king = tools.chessboard.findKing(color)
       val castled = if (tools.logBook.kingCastled(king)) 30 else 0
       val verticalDirection = Piece.verticalDirection(color)
-      val row = king.position.whichRow + verticalDirection.vertical
+      val row = (king.position.whichRow + verticalDirection.vertical).toByte
       val col = king.position.whichCol
       // protection by pawns
-      Seq(SquareXY(row, col - 1), SquareXY(row, col), SquareXY(row, col + 1))
+      Seq(SquareXY(row, (col - 1).toByte), SquareXY(row, col), SquareXY(row, (col + 1).toByte))
         .count(square => square.isInsideChessboard &&
           (tools.chessboard.get(square) match {
             case Some(_: Pawn) => true

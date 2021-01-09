@@ -38,14 +38,14 @@ Performances
 ------------
 For the moment, the idea was to have a clear design with trait and actor model. I did not take time to optimize anything. 
 
-The performances are very poor. Currently, this chess program computes 2000 positions per second whereas Stockfish calculates 70 millions positions per second.
+The performances are very poor. Currently, this chess program computes 2000 positions per second whereas Stockfish calculates 70 millions positions per second. By using Graal VM, we can compute up to 4000 / 4500 positions per second.
 
 TODO
 ----
 
 === Improve performances
 
-Calculating 100 000 positions per second would be great (x 50). The idea is not to compete against Stockfish but to improve sufficiently 
+Calculating 100 000 positions per second would be great (x 25). The idea is not to compete against Stockfish but to improve sufficiently 
 the computation without taking too much time on tricks only valid for chess intelligence. Improving Scala performance looks very interesting since we scarcely take time to do it by iteration. Usually, Scala help building strong and distributed reliable architecture. Here, this is a way to go deep further into this.
 
 Since the critical path is the move generation (and playing a move), we could take several approaches to optimize that:

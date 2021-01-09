@@ -2,11 +2,11 @@ package model
 
 import model.board.BaseMove.Moves
 
-case class Direction(val horizontal: Int = 0, val vertical: Int = 0) {
+case class Direction(val horizontal: Byte = 0, val vertical: Byte = 0) {
   require(horizontal != 0 || vertical != 0)
   def compose(direction: Direction) = Direction(
-    this.horizontal + direction.horizontal,
-    this.vertical + direction.vertical)
+    (this.horizontal + direction.horizontal).toByte,
+    (this.vertical + direction.vertical).toByte)
 
   def left: Direction = compose(Direction.left)
   def right: Direction = compose(Direction.right)

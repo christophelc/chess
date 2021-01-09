@@ -1,12 +1,12 @@
 package model
 
 import model.Piece._
-import model.RichSquare.SquareXYFromString
+import model.board.RichSquare.SquareXYFromString
 import model.Square.{ row2, row7 }
 import model.board.ChessboardImpl
 
 object Piece {
-  type PieceId = Short
+  type PieceId = Byte
   final val idQueen: PieceId = 0
   final val idKing: PieceId = 1
   final val idBishop: PieceId = 2

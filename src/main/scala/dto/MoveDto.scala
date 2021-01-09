@@ -1,6 +1,6 @@
 package dto
 
-import model.RichSquare.SquareXYFromString
+import model.board.RichSquare.SquareXYFromString
 import model.board.BaseMove.Moves
 import model.board.ChessboardImpl
 import model.{ Black, Color, GenericMove, LogBook, Tools, White }

@@ -1,7 +1,7 @@
 package model
 
 import org.specs2.mutable.Specification
-import RichSquare._
+import model.board.RichSquare._
 import model.board._
 
 class PieceSpec extends Specification {

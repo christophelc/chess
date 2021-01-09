@@ -1,7 +1,7 @@
 package dto
 
 import model._
-import RichSquare._
+import model.board.RichSquare._
 import model.board.{ Bishop, King, Knight, Pawn, Queen, Rook }
 
 object PieceDto {

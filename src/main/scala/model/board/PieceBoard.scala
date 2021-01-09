@@ -1,7 +1,7 @@
 package model.board
 
 import model.Piece._
-import model.RichSquare.SquareXYFromString
+import RichSquare.SquareXYFromString
 import model._
 
 abstract class PieceBoard(
@@ -210,7 +210,7 @@ case class Pawn(
         pawn = this,
         dest = position.shift(Direction(
           vertical = verticalDirection.vertical,
-          horizontal = lastMovePawn2squares.piece.position.whichCol - this.position.whichCol)),
+          horizontal = (lastMovePawn2squares.piece.position.whichCol - this.position.whichCol).toByte)),
         takenPawn = Pawn(lastMovePawn2squares.piece.color, lastMovePawn2squares.dest)))
     val movesOnly = Seq(verticalMove1, verticalMove2, diagLeft, diagRight, ep)
       .flatten

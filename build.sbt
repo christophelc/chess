@@ -7,4 +7,3 @@ lazy val chess = (project in file(".")).enablePlugins(JmhPlugin)
 libraryDependencies += akka
 libraryDependencies ++= logger
 libraryDependencies ++= testLib
-

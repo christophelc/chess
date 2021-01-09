@@ -50,7 +50,8 @@ model. I did not take time to optimize anything.
 
 The performances are very poor. Currently, this chess program computes
 2000 positions per second whereas Stockfish calculates 70 millions
-positions per second.
+positions per second. By using Graal VM, we can compute up to 4000 /
+4500 positions per second.
 
 TODO
 ====
@@ -58,7 +59,7 @@ TODO
 Improve performances
 --------------------
 
-Calculating 100 000 positions per second would be great (x 50). The idea
+Calculating 100 000 positions per second would be great (x 25). The idea
 is not to compete against Stockfish but to improve sufficiently the
 computation without taking too much time on tricks only valid for chess
 intelligence. Improving Scala performance looks very interesting since

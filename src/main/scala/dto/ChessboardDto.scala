@@ -1,7 +1,8 @@
 package dto
 
 import model.Chessboard.NoPiece
-import model.board.{ Bishop, ChessboardImpl, King, Knight, Pawn, PiecesSeq, Queen, Rook }
+import model.Square._
+import model.board.{ Bishop, ChessboardImpl, King, Knight, Pawn, PiecesSeq, Queen, Rook, SquareXY }
 import model.{ Chessboard, board, _ }
 
 import scala.util.matching.Regex
@@ -47,8 +48,8 @@ class SimpleChessboardCodec extends Codec {
 }
 
 class FENCodec {
-  private def readLine(row: Int, line: String): Pieces = {
-    case class Acc(col: Int = 0, pieces: Pieces = PiecesSeq(NoPiece))
+  private def readLine(row: Row, line: String): Pieces = {
+    case class Acc(col: Col = 0, pieces: Pieces = PiecesSeq(NoPiece))
     line.toCharArray.foldLeft(Acc())((acc, c) => {
       val square = SquareXY(row = row, col = acc.col)
       if (c.isLetter) {
@@ -61,9 +62,9 @@ class FENCodec {
           case 'q' => Queen(color, square)
           case 'k' => King(color, square)
         }
-        acc.copy(col = acc.col + 1, pieces = acc.pieces.add(piece))
+        acc.copy(col = (acc.col + 1).toByte, pieces = acc.pieces.add(piece))
       } else {
-        acc.copy(col = acc.col + c - '0')
+        acc.copy(col = (acc.col + c - '0').toByte)
       }
     }).pieces
   }
@@ -93,7 +94,7 @@ class FENCodec {
   def encode(game: ChessGame): ChessboardDto = {
     val lines: String = (for (row <- 7 to 0 by -1) yield {
       (for (col <- 0 to 7) yield {
-        game.tools.chessboard.get(SquareXY(row = row, col = col)).map(piece => {
+        game.tools.chessboard.get(SquareXY(row = row.toByte, col = col.toByte)).map(piece => {
           val s = pieceToString(piece)
           if (piece.color == White) s.toUpperCase() else s.toLowerCase()
         }).getOrElse(" ")
@@ -133,7 +134,7 @@ class FENCodec {
     }
     val castle = castling(game.tools)
     val ep = game.tools.logBook.epForLastMove.map(_.toString).getOrElse("-")
-    val plyLastCapture = game.tools.logBook.plyLastCapture.toString
+    val plyLastCapture = game.tools.logBook.plyLastCaptureOrPawnMove.toString
     val nextMove = game.tools.logBook.nextMove.toString
     ChessboardDto(s"$chessboard $whichPlayer $castle $ep $plyLastCapture $nextMove")
   }
@@ -142,7 +143,7 @@ class FENCodec {
     val s = (for (i <- 0 to 7) yield "([rnbqkpRNBQKP1-8]+)").mkString("/") + """\s([b|w])\s(-|[K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$"""
     val pattern = new Regex(s"^$s")
     val pattern(line8, line7, line6, line5, line4, line3, line2, line1, whichPlayer, castle, ep, plyCaptureAndMove) = chessboardDto.encoded
-    val pieces = (for ((line, idx) <- Seq(line1, line2, line3, line4, line5, line6, line7, line8).zipWithIndex) yield readLine(row = idx, line).list).flatten
+    val pieces = (for ((line, idx) <- Seq(line1, line2, line3, line4, line5, line6, line7, line8).zipWithIndex) yield readLine(row = idx.toByte, line).list).flatten
     ChessGame(
       playerBlack = PlayerReal("Black"),
       playerWhite = PlayerReal("White"),
@@ -155,7 +156,7 @@ class FENCodec {
           greatCastlingForbiddenWhite = !castle.contains("Q"),
           smallCastlingForbiddenBlack = !castle.contains("k"),
           greatCastlingForbiddenBlack = !castle.contains("q"),
-          plyLastCapture = plyCaptureAndMove.split(" ")(0).toInt,
+          plyLastCaptureOrPawnMove = plyCaptureAndMove.split(" ")(0).toInt,
           nextMove = plyCaptureAndMove.split(" ")(1).toInt)),
       timer = Infinite)
   }

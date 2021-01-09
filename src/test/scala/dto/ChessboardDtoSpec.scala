@@ -2,7 +2,7 @@ package dto
 
 import org.specs2.mutable.Specification
 import model.{ board, _ }
-import model.RichSquare._
+import model.board.RichSquare._
 import model.board.{ ChessboardImpl, King, PiecesSeq }
 
 class ChessboardDtoSpec extends Specification {

@@ -18,7 +18,7 @@ import model.board._
  * @param smallCastlingForbiddenBlack
  * @param greatCastlingForbiddenBlack
  * @param epForLastMove
- * @param plyLastCapture
+ * @param plyLastCaptureOrPawnMove
  * @param nextMove
  */
 case class LogBook(
@@ -30,7 +30,7 @@ case class LogBook(
   val smallCastlingForbiddenBlack: Boolean = false,
   val greatCastlingForbiddenBlack: Boolean = false,
   val epForLastMove: Option[Square] = None,
-  val plyLastCapture: Int = 0,
+  val plyLastCaptureOrPawnMove: Int = 0,
   nextMove: Int = 1) {
 
   require(nextMove >= 1)
@@ -42,8 +42,8 @@ case class LogBook(
 
   private def updatePlyLastCapture(move: GenericMove): LogBook = {
     move.takenPiece match {
-      case None => this.copy(plyLastCapture = plyLastCapture + 1)
-      case Some(_) => this.copy(plyLastCapture = 0)
+      case None => this.copy(plyLastCaptureOrPawnMove = plyLastCaptureOrPawnMove + 1)
+      case Some(_) => this.copy(plyLastCaptureOrPawnMove = 0)
     }
   }
 
@@ -61,8 +61,9 @@ case class LogBook(
         !pieceHasMoved(king) &&
         KingValue.initialPosition(king.color) == king.position
 
-  def isNull50movesRule(moves: Moves): Boolean =
-    moves.size >= 50
+  // FIXME: to be claimed by a player. or >= 75 moves
+  def isNull50movesRule: Boolean =
+    moves.length - plyLastCaptureOrPawnMove >= 100
 
   // FIXME: 3x and not 1x
   def isNullByRepetition3x: Boolean = {
@@ -89,9 +90,9 @@ case class LogBook(
           }
       }
     }
-    val lastMoves = lastRelevantPositions(moves.reverse)
-    isNull50movesRule(lastMoves)
-    // || moves.nonEmpty && reduceMoves(lastRelevantPositions(moves.reverse)).isEmpty
+    false // TODO
+    //val lastMoves = lastRelevantPositions(moves.reverse)
+    //isNullByRepetition3x(moves)
   }
 
   def pieceHasMoved(piece: Piece): Boolean =

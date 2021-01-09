@@ -12,10 +12,14 @@ abstract class Player(val name: String) {
       if (tools.chessboard.isNullByInsufficientMaterial) {
         Some(EndGameByInsufficientMaterial)
       } else {
-        if (tools.logBook.isNullByRepetition3x)
-          Some(EndGameByRepetition)
-        else
-          None
+        if (tools.logBook.isNull50movesRule) {
+          Some(EndGame50MoveNoTakenPieceNoPawnMove)
+        } else {
+          if (tools.logBook.isNullByRepetition3x)
+            Some(EndGameByRepetition)
+          else
+            None
+        }
       }
     }
     maybeEndGame match {
