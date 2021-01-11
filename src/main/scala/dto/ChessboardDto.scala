@@ -49,7 +49,7 @@ class SimpleChessboardCodec extends Codec {
 
 class FENCodec {
   private def readLine(row: Row, line: String): Pieces = {
-    case class Acc(col: Col = 0, pieces: Pieces = PiecesSeq(NoPiece))
+    case class Acc(col: Col = colA, pieces: Pieces = PiecesSeq(NoPiece))
     line.toCharArray.foldLeft(Acc())((acc, c) => {
       val square = SquareXY(row = row, col = acc.col)
       if (c.isLetter) {
@@ -62,9 +62,9 @@ class FENCodec {
           case 'q' => Queen(color, square)
           case 'k' => King(color, square)
         }
-        acc.copy(col = (acc.col + 1).toByte, pieces = acc.pieces.add(piece))
+        acc.copy(col = acc.col.add(1), pieces = acc.pieces.add(piece))
       } else {
-        acc.copy(col = (acc.col + c - '0').toByte)
+        acc.copy(col = acc.col.add(c - '0'))
       }
     }).pieces
   }
@@ -94,7 +94,7 @@ class FENCodec {
   def encode(game: ChessGame): ChessboardDto = {
     val lines: String = (for (row <- 7 to 0 by -1) yield {
       (for (col <- 0 to 7) yield {
-        game.tools.chessboard.get(SquareXY(row = row.toByte, col = col.toByte)).map(piece => {
+        game.tools.chessboard.get(SquareXY(row = Row(row), col = Col(col))).map(piece => {
           val s = pieceToString(piece)
           if (piece.color == White) s.toUpperCase() else s.toLowerCase()
         }).getOrElse(" ")
@@ -143,7 +143,7 @@ class FENCodec {
     val s = (for (i <- 0 to 7) yield "([rnbqkpRNBQKP1-8]+)").mkString("/") + """\s([b|w])\s(-|[K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$"""
     val pattern = new Regex(s"^$s")
     val pattern(line8, line7, line6, line5, line4, line3, line2, line1, whichPlayer, castle, ep, plyCaptureAndMove) = chessboardDto.encoded
-    val pieces = (for ((line, idx) <- Seq(line1, line2, line3, line4, line5, line6, line7, line8).zipWithIndex) yield readLine(row = idx.toByte, line).list).flatten
+    val pieces = (for ((line, idx) <- Seq(line1, line2, line3, line4, line5, line6, line7, line8).zipWithIndex) yield readLine(row = Row(idx), line).list).flatten
     ChessGame(
       playerBlack = PlayerReal("Black"),
       playerWhite = PlayerReal("White"),

@@ -15,7 +15,7 @@ object Score {
       case Knight(_, _) => 300
       case Queen(_, _) => 1000
       case pawn: Pawn =>
-        val n = math.abs(pawn.position.whichRow - pawnInitialRow(pawn.color))
+        val n = math.abs(pawn.position.whichRow.minus(pawnInitialRow(pawn.color)))
         100 + (if (n >= 5) n * 20 else 0)
       case _ => 0
     }
@@ -57,10 +57,10 @@ object Score {
       val king = tools.chessboard.findKing(color)
       val castled = if (tools.logBook.kingCastled(king)) 30 else 0
       val verticalDirection = Piece.verticalDirection(color)
-      val row = (king.position.whichRow + verticalDirection.vertical).toByte
+      val row = (king.position.whichRow.add(verticalDirection.vertical))
       val col = king.position.whichCol
       // protection by pawns
-      Seq(SquareXY(row, (col - 1).toByte), SquareXY(row, col), SquareXY(row, (col + 1).toByte))
+      Seq(SquareXY(row, col.minus(1)), SquareXY(row, col), SquareXY(row, col.add(1)))
         .count(square => square.isInsideChessboard &&
           (tools.chessboard.get(square) match {
             case Some(_: Pawn) => true

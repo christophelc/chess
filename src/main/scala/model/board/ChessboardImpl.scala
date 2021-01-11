@@ -136,8 +136,8 @@ case class ChessboardImpl(
     val axisX = Seq("A", "B", "C", "D", "E", "F", "G", "H").mkString(" ")
     val axisY = Seq("1", "2", "3", "4", "5", "6", "7", "8")
     val board = (for (row <- 7 to 0 by -1) yield {
-      val line = (for (col <- 0 to 7) yield get(row.toByte, col.toByte).map(_.display)
-        .getOrElse(SquareXY(row.toByte, col.toByte).show)).mkString(" ")
+      val line = (for (col <- 0 to 7) yield get(Row(row), Col(col)).map(_.display)
+        .getOrElse(SquareXY(Row(row), Col(col)).show)).mkString(" ")
       Seq(axisY(row), line, axisY(row)).mkString(" ")
     }).mkString("\n")
     Seq("  " + axisX, board, "  " + axisX).mkString("\n")
@@ -174,9 +174,9 @@ object ChessboardImpl {
       (for (col <- 0 to 7) yield Seq(
         Pawn(
           White,
-          SquareXY(row = 1.toByte, col = col.toByte)),
+          SquareXY(row = row2, col = Col(col))),
         Pawn(
           Black,
-          SquareXY(row = 6.toByte, col = col.toByte))))
+          SquareXY(row = row7, col = Col(col)))))
       .flatten)
 }

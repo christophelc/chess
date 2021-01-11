@@ -17,7 +17,7 @@ object Piece {
     case White => Direction.up
     case Black => Direction.down
   }
-  def pawnInitialRow(color: Color): Int = color match {
+  def pawnInitialRow(color: Color): Row = color match {
     case White => row2
     case Black => row7
   }

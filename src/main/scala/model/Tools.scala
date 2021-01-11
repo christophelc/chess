@@ -8,7 +8,7 @@ case class Tools(chessboard: Chessboard, logBook: LogBook) {
     val NoEp: Option[Square] = None
     this.copy(logBook = logBook.copy(epForLastMove =
       if (move.piece.id == idPawn &&
-        math.abs(move.dest.whichRow - move.piece.position.whichRow) == 2) {
+        math.abs(move.dest.whichRow.value - move.piece.position.whichRow.value) == 2) {
         Seq(
           (move.dest.left, Direction.right),
           (move.dest.right, Direction.left)).foldLeft(NoEp)((maybeEp, squareAndDir) =>

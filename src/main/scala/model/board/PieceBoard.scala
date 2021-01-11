@@ -200,9 +200,9 @@ case class Pawn(
       .filter(move => chessboard.get(move.dest).exists(_.color == color.invert))
     val ep = logBook.moves.lastOption.filter {
       case move: GenericMove => move.piece match {
-        case pawn: Pawn if math.abs(pawn.position.whichRow - move.dest.whichRow) == 2 &&
+        case pawn: Pawn if math.abs(pawn.position.whichRow.minus(move.dest.whichRow)) == 2 &&
           move.dest.whichRow == this.position.whichRow &&
-          math.abs(this.position.whichCol - pawn.position.whichCol) == 1 => true
+          math.abs(this.position.whichCol.minus(pawn.position.whichCol)) == 1 => true
         case _ => false
       }
     }.map(lastMovePawn2squares =>
@@ -210,11 +210,11 @@ case class Pawn(
         pawn = this,
         dest = position.shift(Direction(
           vertical = verticalDirection.vertical,
-          horizontal = (lastMovePawn2squares.piece.position.whichCol - this.position.whichCol).toByte)),
+          horizontal = lastMovePawn2squares.piece.position.whichCol.minus(this.position.whichCol))),
         takenPawn = Pawn(lastMovePawn2squares.piece.color, lastMovePawn2squares.dest)))
     val movesOnly = Seq(verticalMove1, verticalMove2, diagLeft, diagRight, ep)
       .flatten
-      .flatMap(move => if (move.dest.isVerticalBorder)
+      .flatMap(move => if (move.dest.isRowLimit)
         promotion(move)
       else
         Seq(move))

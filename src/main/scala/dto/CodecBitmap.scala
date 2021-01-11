@@ -35,7 +35,7 @@ object CodecBitmap {
         val (color, pieceId) = decodeColorWithPieceId(colorWithPieceId)
         val squares = bytes.map(_.toInt)
         squares.map(i => {
-          val square = SquareXY(row = (i / 8).toByte, col = (i % 8).toByte)
+          val square = SquareXY(row = Row(i / 8), col = Col(i % 8))
           pieceId match {
             case Piece.idBishop => Bishop(color, square)
             case Piece.idKnight => Knight(color, square)
