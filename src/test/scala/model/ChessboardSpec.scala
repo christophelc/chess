@@ -9,7 +9,7 @@ class ChessboardSpec extends Specification {
   val logBook: LogBook = LogBook()
 
   def generateMoveWithControl(tools: Tools, color: Color): Seq[GenericMove] =
-    MovesWithControlImpl.convert(tools.chessboard.generateMoveWithControl(color)(tools.logBook)).moves
+    MovesWithControlImpl.convert(tools.chessboard.generateMoveWithControl(color)(tools.logBook)).moves.toSeq
 
   "A King doing small castle" should {
     "be at g1 and its rook at f1" in {
@@ -104,7 +104,7 @@ class ChessboardSpec extends Specification {
         chessboard = ChessboardImpl.empty + pawn + whiteKing + blackKing,
         logBook = logBook)
       val promoted = Queen(White, "c8".toSquare)
-      val moves = generateMoveWithControl(tools, White)
+      val moves: Seq[GenericMove] = generateMoveWithControl(tools, White)
       val move = moves
         .find(_ match {
           case Promotion(_, newPiece, _) => newPiece match {
@@ -114,7 +114,7 @@ class ChessboardSpec extends Specification {
         })
       move.isDefined should beTrue
       tools.chessboard.play(move.get) shouldEqual ChessboardImpl.empty + promoted + whiteKing + blackKing
-      move.get.show(tools, moves) shouldEqual ("c8=Q")
+      move.get.show(tools, MovesManager.build(moves)) shouldEqual ("c8=Q")
     }
 
     "promote to a Queen in cxb8 by taking a black piece in b8" in {
@@ -137,7 +137,7 @@ class ChessboardSpec extends Specification {
         })
       move.isDefined should beTrue
       tools.chessboard.play(move.get) shouldEqual ChessboardImpl.empty + promoted + whiteKing + blackKing
-      move.get.show(tools, moves) shouldEqual ("cxb8=Q")
+      move.get.show(tools, MovesManager.build(moves)) shouldEqual ("cxb8=Q")
     }
   }
 
@@ -159,7 +159,7 @@ class ChessboardSpec extends Specification {
       val moveEp: Option[GenericMove] = moves
         .find(_.dest == "c3".toSquare)
       moveEp.isDefined should beTrue
-      moveEp.get.show(newTools, moves) shouldEqual ("bxc3")
+      moveEp.get.show(newTools, MovesManager.build(moves)) shouldEqual ("bxc3")
       newChessboard.play(moveEp.get) shouldEqual ChessboardImpl.empty + expectedEp + king
     }
 

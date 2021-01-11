@@ -19,7 +19,7 @@ case class ChessboardImpl(
     ChessboardImpl(pieces = pieces.add(piece))
   }
   override def whoIsAttackingSquare(square: Square, controlsByOtherColor: Moves): Seq[Piece] =
-    controlsByOtherColor.filter(_.dest == square).map(_.piece)
+    controlsByOtherColor.toSeq.filter(_.dest == square).map(_.piece)
 
   override def findKing(color: Color): Piece = pieces.king(color)
   override def clear(square: Square): ChessboardImpl = pieces.atSquare(square) match {
@@ -37,12 +37,12 @@ case class ChessboardImpl(
 
     val attackers = whoIsAttackingSquare(
       king.position,
-      controls.filter(_.piece.color == color.invert))
-    val kingsMove = moves
-      .filter(_.piece == king)
-      .filter(move => !isAttackedByColor(move.dest, color.invert))
+      controls.filterColor(color.invert))
+    val kingsMove: Moves = MovesManager.build(king, moves
+      .filterPiece(king).toSeq
+      .filter(move => !isAttackedByColor(move.dest, color.invert)))
 
-    val generatedMoves = attackers.size match {
+    val generatedMoves: Moves = attackers.size match {
       case 0 => moves
       case 1 =>
         // move the king,
@@ -50,32 +50,34 @@ case class ChessboardImpl(
         // hide check by moving a piece other than the king between the King and the attacking queen, bishop, rook
 
         //println("Check by: " + attackers.head.toString)
-        val takeAttackingPiece = moves.filter(_.dest == attackers.head.position)
-        val hideCheck = attackers.head match {
+        val takeAttackingPiece: Moves = moves.filterDest(attackers.head.position)
+        val hideCheck: Seq[GenericMove] = attackers.head match {
           case Rook(_, _) | Bishop(_, _) | Queen(_, _) =>
             val squaresForHidingCheck = king.position.squaresStrictlyBetween(attackers.head.position)
-            moves.filter(move => squaresForHidingCheck.contains(move.dest))
+            moves.toSeq.filter(move => squaresForHidingCheck.contains(move.dest))
           case _ => Nil
         }
-        kingsMove ++ takeAttackingPiece ++ hideCheck
+        kingsMove
+          .add(takeAttackingPiece)
+          .add(MovesManager.build(hideCheck))
       // double check: only the king can move
       case _ =>
         //println("Double check by: " + attackers.map(_.toString).mkString(" "))
         kingsMove
     }
-    generatedMoves
+    MovesManager.build(generatedMoves.toSeq
       .filter(move => move.piece match {
         case King(_, _) =>
           // redundant if no check since we have already tested the king cannot move into a attacked square
           !play(move).updateControls(logBook).isAttackedByColor(move.dest, color.invert)
         case _ =>
           !play(move).updateControls(logBook).isAttackedByColor(king.position, color.invert)
-      })
+      }))
   }
 
   override def updateControls(logBook: LogBook): Chessboard =
-    this.copy(controls = MovesWithControlImpl.convert(generateMoveWithControl(Black)(logBook)).controls ++
-      MovesWithControlImpl.convert(generateMoveWithControl(White)(logBook)).controls)
+    this.copy(controls = MovesWithControlImpl.convert(generateMoveWithControl(Black)(logBook)).controls
+      .add(MovesWithControlImpl.convert(generateMoveWithControl(White)(logBook)).controls))
 
   def play(move: GenericMove): Chessboard = {
     def makeMove(move: GenericMove): Chessboard = {
@@ -109,7 +111,7 @@ case class ChessboardImpl(
 
   def isCheck(king: King): Boolean = isAttackedByColor(king.position, king.color.invert)
   def isAttackedByColor(square: Square, color: Color): Boolean =
-    controls.filter(_.piece.color == color).exists(_.dest == square)
+    controls.filterColor(color).toSeq.exists(_.dest == square)
   def isSmallCastlingAttacked(king: King): Boolean =
     isAttackedByColor(king.position.right, king.color.invert) &&
       isAttackedByColor(king.position.right.right, king.color.invert)

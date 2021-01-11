@@ -115,7 +115,7 @@ case class King(
     else
       None
 
-    MovesWithControlImpl.convert(
+    val movesAllDirection: MovesWithControl =
       moveUnitGenWithControl(chessboard)(Seq(
         Direction.left,
         Direction.right,
@@ -124,7 +124,9 @@ case class King(
         Direction.left.up,
         Direction.left.down,
         Direction.right.up,
-        Direction.right.down))).addMovesOnly(smallCastling.toSeq ++ greatCastling.toSeq)
+        Direction.right.down))
+    val movesCastling: Seq[GenericMove] = smallCastling.toSeq ++ greatCastling.toSeq
+    movesAllDirection.addMovesOnly(piece = this, moves = movesCastling)
   }
 }
 
@@ -219,9 +221,12 @@ case class Pawn(
       else
         Seq(move))
 
-    MovesWithControlImpl(moves = movesOnly)
-      .addControlOnly(Seq(
-        moveUnitWithoutControl(chessboard)(diagonalLeft),
-        moveUnitWithoutControl(chessboard)(diagonalRight)).flatten)
+    MovesWithControlImpl
+      .build(
+        piece = this,
+        moves = movesOnly,
+        controls = Seq(
+          moveUnitWithoutControl(chessboard)(diagonalLeft),
+          moveUnitWithoutControl(chessboard)(diagonalRight)).flatten)
   }
 }

@@ -25,8 +25,8 @@ class EngineMinMax(depth: Int) extends Engine {
     def generateChildrenAndMoves: Children = {
       profile("generateChildrenAndMoves") {
         val moves = ChessboardImpl.convert(tools.chessboard).generateMove(currentColor)(tools.logBook)
-        sendStat(UpdateStat(moves.length))
-        (for (move <- moves) yield move -> Node(
+        sendStat(UpdateStat(moves.toSeq.length))
+        (for (move <- moves.toSeq) yield move -> Node(
           parent = Some(tree)))
       }
     }

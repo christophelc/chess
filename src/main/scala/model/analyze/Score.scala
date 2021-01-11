@@ -34,7 +34,7 @@ object Score {
 
   // opening
   def developmentBishopKnight(color: Color, controls: Moves): Int = {
-    val bishopAndKnightControl = controls.filter(_.piece match {
+    val bishopAndKnightControl = controls.toSeq.filter(_.piece match {
       case Knight(_, _) | Bishop(_, _) => true
       case _ => false
     })
@@ -76,14 +76,14 @@ object Score {
   }
 
   def queenActivate(color: Color, controls: Moves): Int = {
-    controls.count(_.piece match {
+    controls.toSeq.count(_.piece match {
       case queen: Queen if (queen.color == color) => true
       case _ => false
     }) * 5
   }
 
   def rookActivate(color: Color, controls: Moves): Int = {
-    controls.count(_.piece match {
+    controls.toSeq.count(_.piece match {
       case rook: Rook if (rook.color == color) => true
       case _ => false
     }) * 5

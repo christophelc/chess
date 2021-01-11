@@ -1,9 +1,9 @@
 package model.board
 
 import dto.PieceDto
-import model.Piece.{ idRook, idBishop }
+import model.Piece.{ idBishop, idRook }
 import model.board.BaseMove.Moves
-import model.{ GenericMove, Piece, Square, Tools, White }
+import model.{ Color, GenericMove, Piece, Square, Tools, White }
 
 sealed abstract class BaseMove(
   override val piece: Piece,
@@ -35,7 +35,7 @@ sealed abstract class BaseMove(
       case _ => ""
     }
     // check if 2 pieces of same type can go at the same place (rook or bishop)
-    val sameKind = moves.filter(move =>
+    val sameKind = moves.toSeq.filter(move =>
       (piece.id == idRook || piece.id == idBishop) &&
         move.piece.id == piece.id &&
         move.dest == dest)
@@ -53,11 +53,46 @@ sealed abstract class BaseMove(
   }
 }
 
-object BaseMove {
-  type Moves = Seq[GenericMove]
-  val EmptyMove: Seq[GenericMove] = Nil
+object MovesManager {
+  def build(piece: Piece, moves: Seq[GenericMove]): MovesManager =
+    MovesManager(Map(piece -> moves))
 
-  def showEasy(moves: Moves) = {
+  def build(moves: Seq[GenericMove]): MovesManager =
+    MovesManager(moves.groupBy(_.piece))
+}
+
+case class MovesManager(moves: Map[Piece, Seq[GenericMove]]) {
+  def toSeq: Seq[GenericMove] = moves.values.toSeq.flatten
+  def isEmpty: Boolean = moves.isEmpty
+  def count: Int = moves.map(_._2.length).sum
+  def filterColor(color: Color): MovesManager =
+    this.copy(moves = moves.filter {
+      case (piece, v) => piece.color == color
+    })
+  def filterDest(dest: Square): MovesManager =
+    this.copy(moves = moves.map {
+      case (k, v) => k -> v.filter(_.dest == dest)
+    }.filter(_._2.nonEmpty))
+  def filterPiece(piece: Piece): MovesManager =
+    this.copy(moves = moves.filter(_._1 == piece))
+  // the most efficent way found
+  def add(otherMoves: MovesManager): MovesManager = this.copy(moves =
+    otherMoves.moves.toSeq.foldLeft(moves)((acc, newMoves) => {
+      val piece = newMoves._1
+      if (acc.contains(piece)) {
+        (acc - piece) ++ Map(piece -> (acc(piece) ++ newMoves._2))
+      } else {
+        acc ++ Map(newMoves)
+      }
+    }))
+  def add(move: GenericMove): MovesManager = add(MovesManager(moves = Map(move.piece -> Seq(move))))
+}
+
+object BaseMove {
+  type Moves = MovesManager
+  val EmptyMove: Moves = MovesManager(Map[Piece, Seq[GenericMove]]())
+
+  def showEasy(moves: Seq[GenericMove]) = {
     case class Acc(show: String = "", ply: Int = 0)
     moves match {
       case Nil => ""

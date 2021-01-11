@@ -33,7 +33,6 @@ object KingValue {
 }
 
 trait Piece {
-  type NoTakenPiece
   def id: PieceId
   def color: Color
   def position: Square

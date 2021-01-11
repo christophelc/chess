@@ -1,7 +1,7 @@
 package model.data
 
 import model.GenericMove
-import model.board.BaseMove.Moves
+import model.board.BaseMove.{ EmptyMove, Moves }
 import model.data.Tree.Children
 object Tree {
   type Children = Seq[(GenericMove, Tree)]
@@ -12,7 +12,7 @@ object Tree {
 sealed trait Tree {
   def show(moveParent: String = ""): String
   def findBestMoveFromTree: Option[GenericMove]
-  def findBestVariation: Moves
+  def findBestVariation: Seq[GenericMove]
 }
 final case class Node(
   parent: Option[Tree] = None,
@@ -30,7 +30,7 @@ final case class Node(
       Some(movesWithScores.maxBy(_._2)._1)
   }
 
-  override def findBestVariation: Moves =
+  override def findBestVariation: Seq[GenericMove] =
     findBestMoveFromTree.map(move =>
       move +: children.find(_._1 == move)
         .head._2.findBestVariation).getOrElse(Nil)

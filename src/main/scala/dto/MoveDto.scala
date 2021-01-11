@@ -36,7 +36,7 @@ object MoveDto {
 
   private def encode(tools: Tools, color: Color)(move: String): Either[String, GenericMove] = {
     val moves = ChessboardImpl.convert(tools.chessboard).generateMove(color)(tools.logBook)
-    moves.find(m => Seq(move, s"$move+").contains(m.show(tools, moves))).map(move => Right(move))
+    moves.toSeq.find(m => Seq(move, s"$move+").contains(m.show(tools, moves))).map(move => Right(move))
       .getOrElse(Left(
         s"""invalid move $move for $color
            |${tools.chessboard}
@@ -57,7 +57,7 @@ object MoveDto {
                 color = newToolsWithColor.color.invert))))
   }.map(_.tools)
 
-  def encodeMultiline(tools: Tools, moves: String): Either[String, Moves] = {
+  def encodeMultiline(tools: Tools, moves: String): Either[String, Seq[GenericMove]] = {
     val (color, genericMoves) = readMultiline(moves)
     encode(tools)(color, genericMoves).map(_.logBook.moves)
   }

@@ -41,8 +41,7 @@ trait MovesWithControl {
   val moves: Moves
   val controls: Moves
 
-  def addMovesOnly(moves: Moves): MovesWithControl
-  def addControlOnly(moves: Moves): MovesWithControl
+  def addMovesOnly(piece: Piece, moves: Seq[GenericMove]): MovesWithControl
   def addMoveAndControl(move: GenericMove): MovesWithControl
   def addMoveOrControlOnlyIfSameColor(move: GenericMove, pieceDest: Piece): MovesWithControl
   def concat(movesWithControl: MovesWithControl): MovesWithControl

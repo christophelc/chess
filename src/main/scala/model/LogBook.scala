@@ -22,7 +22,7 @@ import model.board._
  * @param nextMove
  */
 case class LogBook(
-  moves: Moves = EmptyMove,
+  moves: Seq[GenericMove] = Seq(),
   initialPosition: Chessboard = ChessboardImpl(),
   val whichPlayerStart: Color = White,
   val smallCastlingForbiddenWhite: Boolean = false,
@@ -67,7 +67,7 @@ case class LogBook(
 
   // FIXME: 3x and not 1x
   def isNullByRepetition3x: Boolean = {
-    def reduceMoves(moves: Moves): Moves = {
+    def reduceMoves(moves: Seq[GenericMove]): Seq[GenericMove] = {
       moves match {
         case Nil => Nil
         case head :: tail =>
@@ -80,7 +80,7 @@ case class LogBook(
           }
       }
     }
-    def lastRelevantPositions(m: Moves): Moves = {
+    def lastRelevantPositions(m: Seq[GenericMove]): Seq[GenericMove] = {
       m match {
         case Nil => Nil
         case head :: tail =>

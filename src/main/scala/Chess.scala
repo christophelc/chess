@@ -20,7 +20,7 @@ object Chess extends App {
     if (id == 0)
       new EngineAlphaBeta(depth = 4) with InterceptActor with InterceptProfiler { override val statActor: ActorRef = myStatActor }
     else
-      new EngineAlphaBeta(depth = 3) with InterceptActor { override val statActor: ActorRef = myStatActor })
+      new EngineAlphaBeta(depth = 3) with InterceptActor with InterceptProfiler { override val statActor: ActorRef = myStatActor })
 
   //  val players = Seq(
   //    PlayerComputer("1", new EngineV1),

@@ -57,9 +57,9 @@ case class PlayerReal(override val name: String) extends Player(name) {
       var validMove: Option[GenericMove] = None
       do {
         println("Enter your move:")
-        println(moves.map(_.show(tools, moves).mkString(" ")))
+        println(moves.toSeq.map(_.show(tools, moves).mkString(" ")))
         val move = readLine()
-        validMove = moves.find(m => Seq(move, s"$move+").contains(m.show(tools, moves)))
+        validMove = moves.toSeq.find(m => Seq(move, s"$move+").contains(m.show(tools, moves)))
       } while (validMove.isEmpty)
       validMove.get
     }
