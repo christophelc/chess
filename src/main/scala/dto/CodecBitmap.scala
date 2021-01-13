@@ -1,7 +1,7 @@
 package dto
 
-import model.board.{ Bishop, ChessboardImpl, King, Knight, Pawn, PiecesSeq, Queen, Rook, SquareXY }
-import model.{ Chessboard, _ }
+import model.board._
+import model._
 
 case class Bitmap(colorWithPieceId: Byte, bytes: Seq[Byte])
 
@@ -37,12 +37,12 @@ object CodecBitmap {
         squares.map(i => {
           val square = SquareXY(row = Row(i / 8), col = Col(i % 8))
           pieceId match {
-            case Piece.idBishop => Bishop(color, square)
-            case Piece.idKnight => Knight(color, square)
-            case Piece.idKing => King(color, square)
-            case Piece.idQueen => Queen(color, square)
-            case Piece.idRook => Rook(color, square)
-            case Piece.idPawn => Pawn(color, square)
+            case Piece.idBishop => BishopBoardImpl(color, square)
+            case Piece.idKnight => KnightBoardImpl(color, square)
+            case Piece.idKing => KingBoardImpl(color, square)
+            case Piece.idQueen => QueenBoardImpl(color, square)
+            case Piece.idRook => RookBoardImpl(color, square)
+            case Piece.idPawn => PawnBoardImpl(color, square)
           }
         })
     }

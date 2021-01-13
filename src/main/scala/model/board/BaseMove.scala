@@ -3,7 +3,7 @@ package model.board
 import dto.PieceDto
 import model.Piece.{ idBishop, idRook }
 import model.board.BaseMove.Moves
-import model.{ Color, GenericMove, Piece, Square, Tools, White }
+import model.{ Color, GenericMove, Pawn, Piece, Square, Tools, White }
 
 sealed abstract class BaseMove(
   override val piece: Piece,
@@ -13,7 +13,7 @@ sealed abstract class BaseMove(
   override def showEasy(): String = {
     val taking = if (takenPiece.isDefined) "x" else ""
     val pawnIsTaking = piece match {
-      case Pawn(_, _) if takenPiece.isDefined => piece.position.toString.charAt(0).toLower.toString
+      case _: Pawn if takenPiece.isDefined => piece.position.toString.charAt(0).toLower.toString
       case _ => ""
     }
     s"$pawnIsTaking${PieceDto.toStringShort(piece)}$taking${dest.toString().toLowerCase}"
@@ -21,7 +21,7 @@ sealed abstract class BaseMove(
   override def show(tools: Tools, moves: Moves): String = {
     val taking = if (takenPiece.isDefined) "x" else ""
     val check = piece match {
-      case _: King => ""
+      case _: KingBoardImpl => ""
       case piece: Piece =>
         val kingOpponent = tools.chessboard.findKing(piece.color.invert)
         if (tools.chessboard.play(this)
@@ -31,7 +31,7 @@ sealed abstract class BaseMove(
         } else ""
     }
     val pawnIsTaking = piece match {
-      case Pawn(_, _) if takenPiece.isDefined => piece.position.toString.charAt(0).toLower.toString
+      case _: Pawn if takenPiece.isDefined => piece.position.toString.charAt(0).toLower.toString
       case _ => ""
     }
     // check if 2 pieces of same type can go at the same place (rook or bishop)
@@ -124,13 +124,13 @@ case class Ep(pawn: Pawn, override val dest: Square, val takenPawn: Pawn)
   extends BaseMove(pawn, dest, Some(takenPawn))
 
 case class SmallCastling(
-  king: King,
+  king: KingBoardImpl,
   override val dest: Square,
   rookMove: BaseMove) extends BaseMove(king, dest) {
   override def show(tools: Tools, moves: Moves): String = "o-o"
 }
 case class GreatCastling(
-  king: King,
+  king: KingBoardImpl,
   override val dest: Square,
   rookMove: BaseMove) extends BaseMove(king, dest) {
   override def show(tools: Tools, moves: Moves): String = "o-o-o"

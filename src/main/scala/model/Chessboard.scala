@@ -36,6 +36,8 @@ trait Chessboard {
   def withEndGame(endGame: Option[EndGame]): Chessboard
   def isCheck(color: Color): Boolean =
     isAttackedByColor(findKing(color).position, color.invert)
+  def canSmallCastling(history: LogBook, king: King): Boolean
+  def canGreatCastling(history: LogBook, king: King): Boolean
   def isSmallCastlingAvailableNow(logBook: LogBook, king: Piece): Boolean = {
     logBook.isSmallCastlingAvailable(king) &&
       get(king.position.right.right.right).exists(rook =>

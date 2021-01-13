@@ -4,16 +4,16 @@ import model.Piece.pawnInitialRow
 import model.{ Chessboard, _ }
 import model.analyze.Strategy._
 import model.board.BaseMove.Moves
-import model.board.{ Bishop, ChessboardImpl, Knight, Pawn, Queen, Rook, SquareXY }
+import model.board._
 
 object Score {
 
   def value(piece: Piece): Int = {
     piece match {
-      case Rook(_, _) => 500
-      case Bishop(_, _) => 300
-      case Knight(_, _) => 300
-      case Queen(_, _) => 1000
+      case _: Rook => 500
+      case _: Bishop => 300
+      case _: Knight => 300
+      case _: Queen => 1000
       case pawn: Pawn =>
         val n = math.abs(pawn.position.whichRow.minus(pawnInitialRow(pawn.color)))
         100 + (if (n >= 5) n * 20 else 0)
@@ -35,7 +35,7 @@ object Score {
   // opening
   def developmentBishopKnight(color: Color, controls: Moves): Int = {
     val bishopAndKnightControl = controls.toSeq.filter(_.piece match {
-      case Knight(_, _) | Bishop(_, _) => true
+      case _: Knight | _: Bishop => true
       case _ => false
     })
     bishopAndKnightControl.count(_.piece.color == color) * 10

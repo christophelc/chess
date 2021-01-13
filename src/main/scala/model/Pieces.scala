@@ -1,7 +1,5 @@
 package model
 
-import model.board.{ ChessboardImpl }
-
 trait Pieces {
   def list: Seq[Piece]
   def count: Int
@@ -20,6 +18,6 @@ trait Pieces {
   def add(piece: Piece): Pieces
   def sub(piece: Piece): Pieces
   def sub(pieces: Seq[Piece]): Pieces
-  def whereToGo(chessboard: ChessboardImpl)(logBook: LogBook): MovesWithControl
+  def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesWithControl
   def containsSameElementAs(pieces: Pieces): Boolean
 }

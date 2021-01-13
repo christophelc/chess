@@ -2,7 +2,7 @@ package dto
 
 import model.Chessboard.NoPiece
 import model.Square._
-import model.board.{ Bishop, ChessboardImpl, King, Knight, Pawn, PiecesSeq, Queen, Rook, SquareXY }
+import model.board._
 import model.{ Chessboard, board, _ }
 
 import scala.util.matching.Regex
@@ -55,12 +55,12 @@ class FENCodec {
       if (c.isLetter) {
         val color: Color = if (c.toLower == c) Black else White
         val piece: Piece = c.toLower match {
-          case 'p' => Pawn(color, square)
-          case 'r' => Rook(color, square)
-          case 'b' => Bishop(color, square)
-          case 'n' => Knight(color, square)
-          case 'q' => Queen(color, square)
-          case 'k' => King(color, square)
+          case 'p' => PawnBoardImpl(color, square)
+          case 'r' => RookBoardImpl(color, square)
+          case 'b' => BishopBoardImpl(color, square)
+          case 'n' => KnightBoardImpl(color, square)
+          case 'q' => QueenBoardImpl(color, square)
+          case 'k' => KingBoardImpl(color, square)
         }
         acc.copy(col = acc.col.add(1), pieces = acc.pieces.add(piece))
       } else {
@@ -71,12 +71,12 @@ class FENCodec {
 
   private def pieceToString(piece: Piece): String = {
     piece match {
-      case Queen(_, _) => "Q"
-      case King(_, _) => "K"
-      case Rook(_, _) => "R"
-      case Bishop(_, _) => "B"
-      case Knight(_, _) => "N"
-      case Pawn(_, _) => "P"
+      case QueenBoardImpl(_, _) => "Q"
+      case KingBoardImpl(_, _) => "K"
+      case RookBoardImpl(_, _) => "R"
+      case BishopBoardImpl(_, _) => "B"
+      case KnightBoardImpl(_, _) => "N"
+      case PawnBoardImpl(_, _) => "P"
     }
   }
 

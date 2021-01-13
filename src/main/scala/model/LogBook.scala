@@ -4,11 +4,13 @@ import model.Piece.idKing
 import model.board.BaseMove.{ EmptyMove, Moves }
 import model.board._
 
+import scala.annotation.tailrec
+
 /**
  *
- * @param moves
- * @param initialPosition
- * @param whichPlayerStart
+ * @param moves History of game moves
+ * @param initialPosition Initial chessboard game
+ * @param whichPlayerStart Useful for FEN
  * @param smallCastlingForbiddenWhite when entering a position by hand, if the king is at its initial position,
  *                              indicate if it can do the small castling. This is not taken into account if the
  *                              king is not on the right position (e1 for white, e8 for black)
@@ -17,9 +19,9 @@ import model.board._
  *                               king is not on the right position (e1 for white, e8 for black)
  * @param smallCastlingForbiddenBlack
  * @param greatCastlingForbiddenBlack
- * @param epForLastMove
- * @param plyLastCaptureOrPawnMove
- * @param nextMove
+ * @param epForLastMove If non empty, indicates where the current play could make an ep. move
+ * @param plyLastCaptureOrPawnMove useful to apply the rule of 50 moves
+ * @param nextMove Number of the next move.
  */
 case class LogBook(
   moves: Seq[GenericMove] = Seq(),
@@ -51,7 +53,7 @@ case class LogBook(
     king.id == idKing &&
       (!smallCastlingForbiddenWhite && king.color == White ||
         !smallCastlingForbiddenBlack && king.color == Black) &&
-        KingValue.initialPosition(king.color) == king.position && // for position manually set
+        KingBoardImpl.initialPosition(king.color) == king.position && // for position manually set
         !pieceHasMoved(king)
 
   def isGreatCastlingAvailable(king: Piece): Boolean =
@@ -59,7 +61,7 @@ case class LogBook(
       (!greatCastlingForbiddenWhite && king.color == White ||
         !greatCastlingForbiddenBlack && king.color == Black) &&
         !pieceHasMoved(king) &&
-        KingValue.initialPosition(king.color) == king.position
+        KingBoardImpl.initialPosition(king.color) == king.position
 
   // FIXME: to be claimed by a player. or >= 75 moves
   def isNull50movesRule: Boolean =
@@ -67,6 +69,7 @@ case class LogBook(
 
   // FIXME: 3x and not 1x
   def isNullByRepetition3x: Boolean = {
+    @tailrec
     def reduceMoves(moves: Seq[GenericMove]): Seq[GenericMove] = {
       moves match {
         case Nil => Nil
@@ -85,7 +88,7 @@ case class LogBook(
         case Nil => Nil
         case head :: tail =>
           (head.piece, head.takenPiece) match {
-            case (Pawn(_, _), _) | (_, Some(_)) => Seq(head)
+            case (_: Pawn, _) | (_, Some(_)) => Seq(head)
             case _ => head +: lastRelevantPositions(tail)
           }
       }

@@ -5,7 +5,6 @@ import RichSquare.SquareXYFromString
 import model._
 
 abstract class PieceBoard(
-  override val id: PieceId,
   override val color: Color,
   override val position: Square) extends Piece {
 
@@ -68,13 +67,12 @@ abstract class PieceBoard(
   }
 }
 
-case class Queen(
+case class QueenBoardImpl(
   override val color: Color,
-  override val position: Square) extends PieceBoard(idQueen, color, position) {
+  override val position: Square) extends PieceBoard(color, position) with Queen {
 
-  override def letsMove(dest: Square): Piece = Queen(color, dest)
-  override def display: String = if (color == Black) "♕" else "♛"
-  override def whereToGo(chessboard: ChessboardImpl)(logBook: LogBook): MovesWithControl =
+  override def letsMove(dest: Square): Piece = this.copy(position = dest)
+  override def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesWithControl =
     moveMulGenWithControl(chessboard)(Seq(
       Direction.left,
       Direction.right,
@@ -85,13 +83,22 @@ case class Queen(
       Direction.right.up,
       Direction.right.down))
 }
-case class King(
-  override val color: Color,
-  override val position: Square) extends PieceBoard(idKing, color, position) {
 
-  override def letsMove(dest: Square): Piece = King(color, dest)
-  override def display: String = if (color == Black) "♔" else "♚"
-  override def whereToGo(chessboard: ChessboardImpl)(logBook: LogBook): MovesWithControl = {
+object KingBoardImpl {
+  final val e1 = "e1".toSquare
+  final val e8 = "e8".toSquare
+  def initialPosition(color: Color): Square = color match {
+    case White => e1
+    case Black => e8
+  }
+}
+
+case class KingBoardImpl(
+  override val color: Color,
+  override val position: Square) extends PieceBoard(color, position) with King {
+
+  override def letsMove(dest: Square): Piece = this.copy(position = dest)
+  override def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesWithControl = {
     val smallCastling: Option[GenericMove] = if (chessboard.canSmallCastling(logBook, king = this))
       moveUnitWithoutControl(chessboard)(Direction.right).flatMap(_ =>
         chessboard.get(this.position.right.right.right).flatMap(rook =>
@@ -130,13 +137,12 @@ case class King(
   }
 }
 
-case class Knight(
+case class KnightBoardImpl(
   override val color: Color,
-  override val position: Square) extends PieceBoard(idKnight, color, position) {
+  override val position: Square) extends PieceBoard(color, position) with Knight {
 
-  override def letsMove(dest: Square): Piece = Knight(color, dest)
-  override def display: String = if (color == Black) "♘" else "♞"
-  override def whereToGo(chessboard: ChessboardImpl)(logBook: LogBook): MovesWithControl =
+  override def letsMove(dest: Square): Piece = this.copy(position = dest)
+  override def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesWithControl =
     moveUnitGenWithControl(chessboard)(Seq(
       Direction.left.left.up,
       Direction.left.left.down,
@@ -147,13 +153,12 @@ case class Knight(
       Direction.down.down.left,
       Direction.down.down.right))
 }
-case class Bishop(
+case class BishopBoardImpl(
   override val color: Color,
-  override val position: Square) extends PieceBoard(idBishop, color, position) {
+  override val position: Square) extends PieceBoard(color, position) with Bishop {
 
-  override def letsMove(dest: Square): Piece = Bishop(color, dest)
-  override def display: String = if (color == Black) "♗" else "♝"
-  override def whereToGo(chessboard: ChessboardImpl)(logBook: LogBook): MovesWithControl =
+  override def letsMove(dest: Square): Piece = this.copy(position = dest)
+  override def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesWithControl =
     moveMulGenWithControl(chessboard)(Seq(
       Direction.left.up,
       Direction.left.down,
@@ -161,31 +166,30 @@ case class Bishop(
       Direction.right.down))
 }
 
-case class Rook(
+case class RookBoardImpl(
   override val color: Color,
-  override val position: Square) extends PieceBoard(idRook, color, position) {
+  override val position: Square) extends PieceBoard(color, position) with Rook {
 
-  override def letsMove(dest: Square): Piece = Rook(color, dest)
-  override def display: String = if (color == Black) "♖" else "♜"
-  override def whereToGo(chessboard: ChessboardImpl)(logBook: LogBook): MovesWithControl =
+  override def letsMove(dest: Square): Piece = this.copy(position = dest)
+  override def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesWithControl =
     moveMulGenWithControl(chessboard)(Seq(
       Direction.left,
       Direction.right,
       Direction.up,
       Direction.down))
 }
-case class Pawn(
+case class PawnBoardImpl(
   override val color: Color,
-  override val position: Square) extends PieceBoard(idPawn, color, position) {
+  override val position: Square) extends PieceBoard(color, position) with Pawn {
 
-  override def letsMove(dest: Square): Piece = Pawn(color, dest)
+  override def letsMove(dest: Square): Piece = this.copy(position = dest)
   override def display: String = if (color == Black) "♙" else "♟"
-  override def whereToGo(chessboard: ChessboardImpl)(logBook: LogBook): MovesWithControl = {
+  override def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesWithControl = {
     def promotion(move: GenericMove): Seq[Promotion] = Seq(
-      Promotion(this, Queen(color = this.color, position = move.dest), takenPiece = chessboard.get(move.dest)),
-      Promotion(this, Knight(color = this.color, position = move.dest), takenPiece = chessboard.get(move.dest)),
-      Promotion(this, Bishop(color = this.color, position = move.dest), takenPiece = chessboard.get(move.dest)),
-      Promotion(this, Rook(color = this.color, position = move.dest), takenPiece = chessboard.get(move.dest)))
+      Promotion(this, QueenBoardImpl(color = this.color, position = move.dest), takenPiece = chessboard.get(move.dest)),
+      Promotion(this, KnightBoardImpl(color = this.color, position = move.dest), takenPiece = chessboard.get(move.dest)),
+      Promotion(this, BishopBoardImpl(color = this.color, position = move.dest), takenPiece = chessboard.get(move.dest)),
+      Promotion(this, RookBoardImpl(color = this.color, position = move.dest), takenPiece = chessboard.get(move.dest)))
 
     val (verticalDirection, pawnInitialRow) = (Piece.verticalDirection(color), Piece.pawnInitialRow(color))
     val diagonalLeft = verticalDirection.left
@@ -201,19 +205,20 @@ case class Pawn(
     val diagRight = moveUnitWithoutControl(chessboard)(diagonalRight)
       .filter(move => chessboard.get(move.dest).exists(_.color == color.invert))
     val ep = logBook.moves.lastOption.filter {
-      case move: GenericMove => move.piece match {
-        case pawn: Pawn if math.abs(pawn.position.whichRow.minus(move.dest.whichRow)) == 2 &&
-          move.dest.whichRow == this.position.whichRow &&
-          math.abs(this.position.whichCol.minus(pawn.position.whichCol)) == 1 => true
-        case _ => false
-      }
+      move: GenericMove =>
+        move.piece match {
+          case pawn: Pawn if math.abs(pawn.position.whichRow.minus(move.dest.whichRow)) == 2 &&
+            move.dest.whichRow == this.position.whichRow &&
+            math.abs(this.position.whichCol.minus(pawn.position.whichCol)) == 1 => true
+          case _ => false
+        }
     }.map(lastMovePawn2squares =>
       Ep(
         pawn = this,
         dest = position.shift(Direction(
           vertical = verticalDirection.vertical,
           horizontal = lastMovePawn2squares.piece.position.whichCol.minus(this.position.whichCol))),
-        takenPawn = Pawn(lastMovePawn2squares.piece.color, lastMovePawn2squares.dest)))
+        takenPawn = PawnBoardImpl(lastMovePawn2squares.piece.color, lastMovePawn2squares.dest)))
     val movesOnly = Seq(verticalMove1, verticalMove2, diagLeft, diagRight, ep)
       .flatten
       .flatMap(move => if (move.dest.isRowLimit)
