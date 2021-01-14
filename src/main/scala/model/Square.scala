@@ -39,6 +39,14 @@ trait Square {
   def down: Square
   def shift(direction: Direction): Square
   def color: Color
+
+  /**
+   * Return a sequence of square strictly between to Squares, if it makes sense.
+   * If the square are on the same line or diagonal, it makes sense.
+   * In the contrary, this function return Nil.
+   * @param square
+   * @return
+   */
   def squaresStrictlyBetween(square: Square): Seq[Square]
   def show: String
 }

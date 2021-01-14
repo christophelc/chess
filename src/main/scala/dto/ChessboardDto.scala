@@ -4,7 +4,7 @@ import model.Chessboard.NoPiece
 import model.Square._
 import model.board._
 import model.{ Chessboard, board, _ }
-
+import model.board.RichSquare._
 import scala.util.matching.Regex
 
 case class ChessboardDto(encoded: String)
@@ -157,7 +157,8 @@ class FENCodec {
           smallCastlingForbiddenBlack = !castle.contains("k"),
           greatCastlingForbiddenBlack = !castle.contains("q"),
           plyLastCaptureOrPawnMove = plyCaptureAndMove.split(" ")(0).toInt,
-          nextMove = plyCaptureAndMove.split(" ")(1).toInt)),
+          epForLastMove = if (ep == "-") None else Some(ep.toSquare),
+          _nextMove = plyCaptureAndMove.split(" ")(1).toInt)),
       timer = Infinite)
   }
 

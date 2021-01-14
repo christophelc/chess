@@ -1,6 +1,6 @@
 package model
 
-trait Color {
+sealed trait Color {
   def invert: Color
 }
 case object Black extends Color {

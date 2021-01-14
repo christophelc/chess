@@ -18,7 +18,7 @@ class EngineCheckMatSpec extends Specification {
     //      val chessboardDto = ChessboardDto(fen)
     //      val game = codec.decode(chessboardDto).copy(playerWhite =
     //        PlayerComputer(name = "Mat in 9 solver", engine = new EngineCheckMate(8)))
-    //      // FIXME: Logbook now which player should play
+    //      // FIXME: Logbook know which player should play
     //      game.play(whichPlayer = White)
     //      codec.encode(game).encoded must equalTo(fen)
     //    }
@@ -29,7 +29,7 @@ class EngineCheckMatSpec extends Specification {
     //      val chessboardDto = ChessboardDto(fen)
     //      val game = codec.decode(chessboardDto).copy(playerWhite =
     //        PlayerComputer(name = "Mat in 3 solver", engine = new EngineCheckMate(6)))
-    //      // FIXME: Logbook now which player should play
+    //      // FIXME: Logbook know which player should play
     //      println(game.play(whichPlayer = White).tools.logBook.toString())
     //      codec.encode(game).encoded must equalTo(fen)
     //    }
@@ -42,7 +42,7 @@ class EngineCheckMatSpec extends Specification {
     //      val chessboardDto = ChessboardDto(fen)
     //      val game = codec.decode(chessboardDto).copy(playerWhite =
     //        PlayerComputer(name = "Mat in 2 solver", engine = new EngineCheckMate(7)))
-    //      // FIXME: Logbook now which player should play
+    //      // FIXME: Logbook know which player should play
     //      println(game.play(whichPlayer = White).tools.logBook.toString())
     //      codec.encode(game).encoded must equalTo(fen)
     //    }
@@ -54,7 +54,7 @@ class EngineCheckMatSpec extends Specification {
       val chessboardDto = ChessboardDto(fen)
       val game = codec.decode(chessboardDto).copy(playerWhite =
         PlayerComputer(name = "Mat in 2 solver", engine = new EngineCheckMate(depth = 5) with Intercept))
-      // FIXME: Logbook now which player should play
+      // FIXME: Logbook know which player should play
       println(game.play(whichPlayer = White).tools.logBook.toString())
       codec.encode(game).encoded must equalTo(fen)
     }

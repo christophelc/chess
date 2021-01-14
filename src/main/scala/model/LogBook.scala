@@ -1,7 +1,6 @@
 package model
 
 import model.Piece.idKing
-import model.board.BaseMove.{ EmptyMove, Moves }
 import model.board._
 
 import scala.annotation.tailrec
@@ -33,9 +32,15 @@ case class LogBook(
   val greatCastlingForbiddenBlack: Boolean = false,
   val epForLastMove: Option[Square] = None,
   val plyLastCaptureOrPawnMove: Int = 0,
-  nextMove: Int = 1) {
+  _nextMove: Int = 1) {
 
   require(nextMove >= 1)
+
+  def nextMove: Int = moves.headOption.map(move => move.piece.color) match {
+    case None => _nextMove
+    case Some(White) => (_nextMove - 1 + moves.size) / 2 + 1
+    case Some(Black) => (_nextMove + moves.size) / 2 + 1
+  }
 
   def add(move: GenericMove): LogBook = {
     this.copy(moves = moves :+ move)
@@ -112,7 +117,7 @@ case class LogBook(
     val tools = Tools(
       chessboard = this.initialPosition,
       logBook = LogBook())
-    val plyInitial = (nextMove - 1) * 2 + (if (whichPlayerStart == White) 0 else 1)
+    val plyInitial = (_nextMove - 1) * 2 + (if (whichPlayerStart == White) 0 else 1)
     case class Acc(
       tools: Tools = tools,
       ply: Int = plyInitial,
@@ -122,7 +127,7 @@ case class LogBook(
       val movesAvailables = ChessboardImpl.convert(tools.chessboard).generateMove(acc.whichPlayer)(tools.logBook)
       val moveToString = move.show(acc.tools, movesAvailables)
       (if (acc.ply % 2 == 0) {
-        val idx: Int = acc.ply / 2 + 1
+        val idx: Int = acc.ply / 2 + 1 + (_nextMove - 1)
         acc.copy(moves = acc.moves :+ s"$idx. $moveToString")
       } else {
         acc.copy(moves = acc.moves :+ s" - $moveToString\n")

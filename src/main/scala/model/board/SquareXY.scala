@@ -23,12 +23,12 @@ case class SquareXY(val row: Row, val col: Col) extends Square {
     val dcol = square.whichCol.minus(col)
     val drow = square.whichRow.minus(row)
     (dcol, drow) match {
+      case (0, 0) => None
       case (0, _) => Some(Direction(vertical = math.signum(drow).toByte))
       case (_, 0) => Some(Direction(horizontal = math.signum(dcol).toByte))
-      case (_, _) => if (math.abs(dcol) == math.abs(drow)) {
+      case (_, _) if (math.abs(dcol) == math.abs(drow)) =>
         Some(Direction(horizontal = math.signum(dcol).toByte, vertical = math.signum(drow).toByte))
-      } else
-        None
+      case (_, _) => None
     }
   }
   override def squaresStrictlyBetween(square: Square): Seq[Square] = {

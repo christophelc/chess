@@ -8,34 +8,29 @@ abstract class Player(val name: String) {
   def findMove(tools: Tools, color: Color): Option[GenericMove]
 
   def play(tools: Tools, color: Color): Tools = {
-    val maybeEndGame: Option[EndGame] = {
-      if (tools.chessboard.isNullByInsufficientMaterial) {
-        Some(EndGameByInsufficientMaterial)
-      } else {
-        if (tools.logBook.isNull50movesRule) {
-          Some(EndGame50MoveNoTakenPieceNoPawnMove)
-        } else {
-          if (tools.logBook.isNullByRepetition3x)
-            Some(EndGameByRepetition)
-          else
-            None
-        }
+    lazy val isInsufficientMaterial = tools.chessboard.isNullByInsufficientMaterial
+    lazy val is50MovesRule = tools.logBook.isNull50movesRule
+    lazy val isRepetition3x = false // TODO // tools.logBook.isNullByRepetition3x
+    Seq(
+      (isInsufficientMaterial, EndGameByInsufficientMaterial),
+      (is50MovesRule, EndGame50MoveNoTakenPieceNoPawnMove),
+      (isRepetition3x, EndGameByRepetition))
+      .view
+      .find(_._1 == true)
+      .map(_._2) match {
+        case endGame @ Some(_) =>
+          tools.copy(chessboard = tools.chessboard.withEndGame(endGame = endGame))
+        case None =>
+          val chessboard: ChessboardImpl = ChessboardImpl.convert(tools.chessboard.updateControls(tools.logBook))
+          val moves = chessboard.generateMove(color)(tools.logBook)
+          if (moves.isEmpty) {
+            tools.copy(chessboard = chessboard.withEndGame(Some(EndgameByCheckPat)))
+          } else {
+            val maybeMove = findMove(tools, color)
+            // having no move available may happen for a manual entered position
+            maybeMove.map(move => tools.play(move)).getOrElse(tools)
+          }
       }
-    }
-    maybeEndGame match {
-      case Some(_) =>
-        tools.copy(chessboard = tools.chessboard.withEndGame(endGame = maybeEndGame))
-      case None =>
-        val chessboard: ChessboardImpl = ChessboardImpl.convert(tools.chessboard.updateControls(tools.logBook))
-        val moves = chessboard.generateMove(color)(tools.logBook)
-        if (moves.isEmpty) {
-          tools.copy(chessboard = chessboard.withEndGame(Some(EndgameByCheckPat)))
-        } else {
-          val maybeMove = findMove(tools, color)
-          // having no move available may happen for a manual entered position
-          maybeMove.map(move => tools.play(move)).getOrElse(tools)
-        }
-    }
   }
 }
 
