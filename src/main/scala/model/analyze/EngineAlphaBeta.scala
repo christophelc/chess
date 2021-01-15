@@ -47,7 +47,6 @@ class EngineAlphaBeta(depth: Int) extends EngineMinMax(depth) {
     }).children)
   }
 
-  override def optimize(tools: Tools, color: Color, deep: Int, tree: Tree): Tree =
-    generateTree(tools, color, deep = deep, alphabeta(tree))
+  override def optimize(tools: Tools, color: Color, deep: Int, tree: Tree): Tree = alphabeta(tree)
 
 }

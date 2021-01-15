@@ -1,6 +1,6 @@
 package model
 
-import model.Piece.idKing
+import model.Piece.{ idKing, idPawn }
 import model.board._
 
 import scala.annotation.tailrec
@@ -48,9 +48,10 @@ case class LogBook(
   }
 
   private def updatePlyLastCapture(move: GenericMove): LogBook = {
-    move.takenPiece match {
-      case None => this.copy(plyLastCaptureOrPawnMove = plyLastCaptureOrPawnMove + 1)
-      case Some(_) => this.copy(plyLastCaptureOrPawnMove = 0)
+    if (move.takenPiece.isEmpty && move.piece.id != idPawn) {
+      this
+    } else {
+      this.copy(plyLastCaptureOrPawnMove = moves.size)
     }
   }
 
@@ -124,7 +125,7 @@ case class LogBook(
       whichPlayer: Color = whichPlayerStart,
       moves: Seq[String] = Nil)
     moves.foldLeft(Acc())((acc, move) => {
-      val movesAvailables = ChessboardImpl.convert(tools.chessboard).generateMove(acc.whichPlayer)(tools.logBook)
+      val movesAvailables = tools.chessboard.generateMove(acc.whichPlayer)(tools.logBook)
       val moveToString = move.show(acc.tools, movesAvailables)
       (if (acc.ply % 2 == 0) {
         val idx: Int = acc.ply / 2 + 1 + (_nextMove - 1)

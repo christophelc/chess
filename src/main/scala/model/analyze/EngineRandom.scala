@@ -11,9 +11,9 @@ class EngineRandom extends Engine {
   def findVariations(
     tools: Tools,
     color: Color): Tree = {
-    val moves = ChessboardImpl.convert(tools.chessboard).generateMove(color)(tools.logBook)
+    val moves = tools.chessboard.generateMove(color)(tools.logBook)
     val root = Node()
-    root.copy(children = Seq((moves.toSeq(random.nextInt(moves.count)), Node(parent = Some(root)))))
+    root.copy(children = Seq((moves.toSeq(random.nextInt(moves.countM)), Node(parent = Some(root)))))
   }
 }
 

@@ -1,7 +1,6 @@
 package model.data
 
 import model.GenericMove
-import model.board.BaseMove.{ EmptyMove, Moves }
 import model.data.Tree.Children
 object Tree {
   type Children = Seq[(GenericMove, Tree)]

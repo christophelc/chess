@@ -1,24 +1,22 @@
 package model.board
 
 import com.typesafe.scalalogging.LazyLogging
-import model.Chessboard.EndGame
+import model.Chessboard.{ EndGame, MovesStorage }
 import RichSquare.SquareXYFromString
 import model.Square._
 import model._
-import model.board.BaseMove.{ EmptyMove, Moves }
+import model.board.StorageImpl.emptyMoveStorage
 
 case class ChessboardImpl(
   override val pieces: Pieces,
-  override val controls: Moves = EmptyMove,
+  override val moves: MovesStorage = StorageImpl.emptyMoveStorage,
   override val endGame: Option[EndGame] = None) extends Chessboard with LazyLogging {
-
-  override type Moves = BaseMove.Moves
 
   def +(piece: Piece): Chessboard = {
     require(pieces.atSquare(piece.position).isEmpty)
     ChessboardImpl(pieces = pieces.add(piece))
   }
-  override def whoIsAttackingSquare(square: Square, controlsByOtherColor: Moves): Seq[Piece] =
+  override def whoIsAttackingSquare(square: Square, controlsByOtherColor: MovesStorage): Seq[Piece] =
     controlsByOtherColor.toSeq.filter(_.dest == square).map(_.piece)
 
   override def findKing(color: Color): Piece = pieces.king(color)
@@ -27,21 +25,24 @@ case class ChessboardImpl(
     case None => this
   }
   override def withEndGame(endGame: Option[EndGame]): Chessboard = this.copy(endGame = endGame)
-  override def generateMoveWithControl(color: Color)(logBook: LogBook): MovesWithControl =
+  override def generateMoveWithControl(color: Color)(logBook: LogBook): MovesStorage =
     pieces.withColor(color).whereToGo(this)(logBook)
 
-  override def generateMove(color: Color)(logBook: LogBook): Moves = {
-    val moves = MovesWithControlImpl.convert(generateMoveWithControl(color)(logBook)).moves
+  override def generateMove(color: Color)(logBook: LogBook): MovesStorage = {
+    val moves = generateMoveWithControl(color)(logBook).filterM(_.isTagged(TagIsMove))
     val king = findKing(color)
 
     val attackers = whoIsAttackingSquare(
       king.position,
-      controls.filterColor(color.invert))
-    val kingsMove: Moves = MovesManager.build(king, moves
-      .filterPiece(king).toSeq
-      .filter(move => !isAttackedByColor(move.dest, color.invert)))
+      moves.filterM(_.isTagged(TagIsControl))
+        .filterP(_.color == color.invert))
+    val kingsMove: MovesStorage = emptyMoveStorage
+      .add(
+        moves
+          .filterP(_ == king)
+          .filterM(move => !isAttackedByColor(move.dest, color.invert)))
 
-    val generatedMoves: Moves = attackers.size match {
+    val generatedMoves: MovesStorage = attackers.size match {
       case 0 => moves
       case 1 =>
         // move the king,
@@ -49,34 +50,34 @@ case class ChessboardImpl(
         // hide check by moving a piece other than the king between the King and the attacking queen, bishop, rook
 
         //println("Check by: " + attackers.head.toString)
-        val takeAttackingPiece: Moves = moves.filterDest(attackers.head.position)
-        val hideCheck: Seq[GenericMove] = attackers.head match {
+        val takeAttackingPiece: MovesStorage = moves.filterM(_.dest == attackers.head.position)
+        val hideCheck: MovesStorage = attackers.head match {
           case _: Rook | _: Bishop | _: Queen =>
             val squaresForHidingCheck = king.position.squaresStrictlyBetween(attackers.head.position)
-            moves.toSeq.filter(move => squaresForHidingCheck.contains(move.dest))
-          case _ => Nil
+            moves.filterM(move => squaresForHidingCheck.contains(move.dest))
+          case _ => emptyMoveStorage
         }
         kingsMove
           .add(takeAttackingPiece)
-          .add(MovesManager.build(hideCheck))
+          .add(hideCheck)
       // double check: only the king can move
       case _ =>
         //println("Double check by: " + attackers.map(_.toString).mkString(" "))
         kingsMove
     }
-    MovesManager.build(generatedMoves.toSeq
-      .filter(move => move.piece match {
+    generatedMoves
+      .filterM(move => move.piece match {
         case _: King =>
           // redundant if no check since we have already tested the king cannot move into a attacked square
           !play(move).updateControls(logBook).isAttackedByColor(move.dest, color.invert)
         case _ =>
           !play(move).updateControls(logBook).isAttackedByColor(king.position, color.invert)
-      }))
+      })
   }
 
   override def updateControls(logBook: LogBook): Chessboard =
-    this.copy(controls = MovesWithControlImpl.convert(generateMoveWithControl(Black)(logBook)).controls
-      .add(MovesWithControlImpl.convert(generateMoveWithControl(White)(logBook)).controls))
+    this.copy(moves = generateMoveWithControl(Black)(logBook).filterM(_.isTagged(TagIsControl))
+      .add(generateMoveWithControl(White)(logBook).filterM(_.isTagged(TagIsControl))))
 
   def play(move: GenericMove): Chessboard = {
     def makeMove(move: GenericMove): Chessboard = {
@@ -94,10 +95,10 @@ case class ChessboardImpl(
       }
     }
     move match {
-      case SmallCastling(_, _, rookMove) => makeMove(move).play(rookMove)
-      case GreatCastling(_, _, rookMove) => makeMove(move).play(rookMove)
-      case Promotion(_, piece, _) => makeMove(move).clear(move.dest) + piece
-      case Ep(_, _, takenPawn) => makeMove(move).clear(takenPawn.position)
+      case SmallCastling(_, _, rookMove, _) => makeMove(move).play(rookMove)
+      case GreatCastling(_, _, rookMove, _) => makeMove(move).play(rookMove)
+      case Promotion(_, piece, _, _) => makeMove(move).clear(move.dest) + piece
+      case Ep(_, _, takenPawn, _) => makeMove(move).clear(takenPawn.position)
       case _ => makeMove(move)
     }
   }
@@ -110,7 +111,9 @@ case class ChessboardImpl(
 
   def isCheck(king: King): Boolean = isAttackedByColor(king.position, king.color.invert)
   def isAttackedByColor(square: Square, color: Color): Boolean =
-    controls.filterColor(color).toSeq.exists(_.dest == square)
+    moves.filterM(_.isTagged(TagIsControl))
+      .filterP(_.color == color)
+      .filterM(_.dest == square).nonEmpty
   def isSmallCastlingAttacked(king: King): Boolean =
     isAttackedByColor(king.position.right, king.color.invert) &&
       isAttackedByColor(king.position.right.right, king.color.invert)
@@ -150,8 +153,6 @@ object ChessboardImpl {
     board.ChessboardImpl(initialState)
   }
 
-  def convert(chessboard: Chessboard): ChessboardImpl =
-    chessboard match { case chessboardImpl: ChessboardImpl => chessboardImpl }
   val empty: ChessboardImpl = ChessboardImpl(PiecesSeq(Nil))
 
   val initialState: Pieces = PiecesSeq(

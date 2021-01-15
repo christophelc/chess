@@ -1,7 +1,6 @@
 package dto
 
 import model.board.RichSquare.SquareXYFromString
-import model.board.BaseMove.Moves
 import model.board.ChessboardImpl
 import model.{ Black, Color, GenericMove, LogBook, Tools, White }
 
@@ -35,7 +34,7 @@ object MoveDto {
   }
 
   private def encode(tools: Tools, color: Color)(move: String): Either[String, GenericMove] = {
-    val moves = ChessboardImpl.convert(tools.chessboard).generateMove(color)(tools.logBook)
+    val moves = tools.chessboard.generateMove(color)(tools.logBook)
     moves.toSeq.find(m => Seq(move, s"$move+").contains(m.show(tools, moves))).map(move => Right(move))
       .getOrElse(Left(
         s"""invalid move $move for $color

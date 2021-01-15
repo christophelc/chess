@@ -1,9 +1,9 @@
 package model.analyze
 
+import model.Chessboard.MovesStorage
 import model.Piece.pawnInitialRow
 import model.{ Chessboard, _ }
 import model.analyze.Strategy._
-import model.board.BaseMove.Moves
 import model.board._
 
 object Score {
@@ -33,12 +33,12 @@ object Score {
   }
 
   // opening
-  def developmentBishopKnight(color: Color, controls: Moves): Int = {
-    val bishopAndKnightControl = controls.toSeq.filter(_.piece match {
-      case _: Knight | _: Bishop => true
+  def developmentBishopKnight(color: Color, controls: MovesStorage): Int = {
+    controls.filterP {
+      case piece: Knight => piece.color == color
+      case piece: Bishop => piece.color == color
       case _ => false
-    })
-    bishopAndKnightControl.count(_.piece.color == color) * 10
+    }.countM * 10
   }
 
   def developmentRook(color: Color, chessboard: Chessboard): Int = {
@@ -71,22 +71,22 @@ object Score {
   }
 
   def squareControl(color: Color, tools: Tools): Int = {
-    developmentBishopKnight(color, ChessboardImpl.convert(tools.chessboard).controls) +
+    developmentBishopKnight(color, tools.chessboard.moves.filterM(_.isTagged(TagIsControl))) +
       developmentRook(color, tools.chessboard)
   }
 
-  def queenActivate(color: Color, controls: Moves): Int = {
-    controls.toSeq.count(_.piece match {
+  def queenActivate(color: Color, controls: MovesStorage): Int = {
+    controls.filterP {
       case queen: Queen if (queen.color == color) => true
       case _ => false
-    }) * 5
+    }.countM * 5
   }
 
-  def rookActivate(color: Color, controls: Moves): Int = {
-    controls.toSeq.count(_.piece match {
+  def rookActivate(color: Color, controls: MovesStorage): Int = {
+    controls.filterP {
       case rook: Rook if (rook.color == color) => true
       case _ => false
-    }) * 5
+    }.countM * 5
   }
 
   def evaluateOpening(target: Target, color: Color, tools: Tools): Int = {
@@ -102,10 +102,10 @@ object Score {
         developmentRook(color, tools.chessboard) - developmentRook(color.invert, tools.chessboard)
       case SecurityKingMiddleGame => kingSecurity(tools, color)
       case SquareControl =>
-        val chessboard = ChessboardImpl.convert(tools.chessboard)
+        val controls = tools.chessboard.moves.filterM(_.isTagged(TagIsControl))
         squareControl(color, tools) - squareControl(color.invert, tools) +
-          queenActivate(color, chessboard.controls) - queenActivate(color.invert, chessboard.controls) +
-          rookActivate(color, chessboard.controls) - rookActivate(color.invert, chessboard.controls)
+          queenActivate(color, controls) - queenActivate(color.invert, controls) +
+          rookActivate(color, controls) - rookActivate(color.invert, controls)
     }
   }
   def evaluateEndGame(target: Target, color: Color, tools: Tools): Int = {

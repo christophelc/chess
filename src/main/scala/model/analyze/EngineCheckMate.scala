@@ -28,7 +28,6 @@ class EngineCheckMate(depth: Int) extends EngineMinMax(depth) {
     })
   }
 
-  override def optimize(tools: Tools, color: Color, deep: Int, tree: Tree): Tree =
-    generateTree(tools, color, deep = deep, pruneForCheck(tree, color, color))
+  override def optimize(tools: Tools, color: Color, deep: Int, tree: Tree): Tree = pruneForCheck(tree, color, color)
 
 }

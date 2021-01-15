@@ -1,14 +1,14 @@
 package model
 
 import dto.CodecBitmap
-import model.Chessboard.EndGame
+import model.Chessboard.{ EndGame, MovesStorage }
 import model.Piece.idRook
 
 trait Chessboard {
   type Moves
 
+  val moves: MovesStorage
   def pieces: Pieces
-  val controls: Moves
   val endGame: Option[EndGame] = None
 
   def toLogPosition: LogPosition = LogPosition(CodecBitmap.encode(this))
@@ -26,13 +26,13 @@ trait Chessboard {
     }
   def get(square: Square): Option[Piece] = pieces.atSquare(square)
   def isAttackedByColor(square: Square, color: Color): Boolean
-  def whoIsAttackingSquare(square: Square, controlsByOtherColor: Moves): Seq[Piece]
+  def whoIsAttackingSquare(square: Square, controlsByOtherColor: MovesStorage): Seq[Piece]
   def updateControls(logBook: LogBook): Chessboard
   def play(move: GenericMove): Chessboard
   def clear(square: Square): Chessboard
   def +(piece: Piece): Chessboard
-  def generateMoveWithControl(color: Color)(logBook: LogBook): MovesWithControl
-  def generateMove(color: Color)(logBook: LogBook): Moves
+  def generateMoveWithControl(color: Color)(logBook: LogBook): MovesStorage
+  def generateMove(color: Color)(logBook: LogBook): MovesStorage
   def withEndGame(endGame: Option[EndGame]): Chessboard
   def isCheck(color: Color): Boolean =
     isAttackedByColor(findKing(color).position, color.invert)
@@ -62,6 +62,7 @@ trait Chessboard {
 }
 
 object Chessboard {
+  type MovesStorage = Storage[Piece, GenericMove]
   trait EndGame
   case object EndGame50MoveNoTakenPieceNoPawnMove extends EndGame
   case object EndGameByRepetition extends EndGame

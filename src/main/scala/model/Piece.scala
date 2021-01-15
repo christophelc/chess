@@ -1,5 +1,6 @@
 package model
 
+import model.Chessboard.MovesStorage
 import model.Piece._
 import model.board.RichSquare.SquareXYFromString
 import model.Square.{ row2, row7 }
@@ -29,7 +30,7 @@ trait Piece {
 
   def shift(direction: Direction): Square = position.shift(direction)
   def letsMove(dest: Square): Piece
-  def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesWithControl
+  def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesStorage
   def display: String
 }
 

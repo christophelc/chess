@@ -21,7 +21,7 @@ abstract class Player(val name: String) {
         case endGame @ Some(_) =>
           tools.copy(chessboard = tools.chessboard.withEndGame(endGame = endGame))
         case None =>
-          val chessboard: ChessboardImpl = ChessboardImpl.convert(tools.chessboard.updateControls(tools.logBook))
+          val chessboard: Chessboard = tools.chessboard.updateControls(tools.logBook)
           val moves = chessboard.generateMove(color)(tools.logBook)
           if (moves.isEmpty) {
             tools.copy(chessboard = chessboard.withEndGame(Some(EndgameByCheckPat)))
@@ -47,7 +47,7 @@ case class PlayerReal(override val name: String) extends Player(name) {
   override def findMove(tools: Tools, color: Color): Option[GenericMove] = {
     import scala.io.StdIn.readLine
 
-    val moves = ChessboardImpl.convert(tools.chessboard).generateMove(color)(tools.logBook)
+    val moves = tools.chessboard.generateMove(color)(tools.logBook)
     def readMove(): GenericMove = {
       var validMove: Option[GenericMove] = None
       do {

@@ -5,7 +5,7 @@ import actor.TournamentActor.Ready
 import akka.actor.ActorRef
 import model.Tournament.system
 import model._
-import model.analyze.{ EngineAlphaBeta, EngineMinMax }
+import model.analyze.{ EngineAlphaBeta, EngineMinMax, EngineRandom }
 import stat.{ InterceptActor, InterceptProfiler, Stat }
 
 object Chess extends App {
@@ -23,8 +23,9 @@ object Chess extends App {
       new EngineAlphaBeta(depth = 3) with InterceptActor with InterceptProfiler { override val statActor: ActorRef = myStatActor })
 
   //  val players = Seq(
-  //    PlayerComputer("1", new EngineV1),
-  //    PlayerReal("me"))
+  //    PlayerComputer("1", new EngineRandom),
+  //    PlayerComputer("2", new EngineAlphaBeta(3) with InterceptActor with InterceptProfiler { override val statActor: ActorRef = myStatActor }))
+  //PlayerReal("me"))
   val tournamentActor = Tournament(Arbitrator("arbitrator1"), players, TimerBlitz(), myStatActor)
 
   tournamentActor ! Ready

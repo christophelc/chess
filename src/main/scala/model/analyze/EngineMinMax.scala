@@ -24,8 +24,8 @@ class EngineMinMax(depth: Int) extends Engine {
 
     def generateChildrenAndMoves: Children = {
       profile("generateChildrenAndMoves") {
-        val moves = ChessboardImpl.convert(tools.chessboard).generateMove(currentColor)(tools.logBook)
-        sendStat(UpdateStat(moves.toSeq.length))
+        val moves = tools.chessboard.generateMove(currentColor)(tools.logBook)
+        sendStat(UpdateStat(moves.countM))
         (for (move <- moves.toSeq) yield move -> Node(
           parent = Some(tree)))
       }
@@ -78,8 +78,7 @@ class EngineMinMax(depth: Int) extends Engine {
     childEvaluate(tree)
   }
 
-  def optimize(tools: Tools, color: Color, deep: Int, tree: Tree): Tree =
-    generateTree(tools, color, deep = deep, tree)
+  def optimize(tools: Tools, color: Color, deep: Int, tree: Tree): Tree = tree
 
   override def findVariations(
     tools: Tools,
@@ -88,7 +87,7 @@ class EngineMinMax(depth: Int) extends Engine {
     // depth iteration
     Range(2, depth + 1).foldLeft(generateTree(tools, color, deep = 2, Root))(
       (tree, level) => {
-        val opt = optimize(tools, color, deep = level, tree)
+        val opt = generateTree(tools, color, deep = level, optimize(tools, color, level, tree))
         println(s"depth = $level -> ${opt.findBestVariation.map(_.showEasy()).mkString(" ")}")
         opt
       })

@@ -1,5 +1,7 @@
 package model
 
+import model.Chessboard.MovesStorage
+
 trait Pieces {
   def list: Seq[Piece]
   def count: Int
@@ -18,6 +20,6 @@ trait Pieces {
   def add(piece: Piece): Pieces
   def sub(piece: Piece): Pieces
   def sub(pieces: Seq[Piece]): Pieces
-  def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesWithControl
+  def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesStorage
   def containsSameElementAs(pieces: Pieces): Boolean
 }
