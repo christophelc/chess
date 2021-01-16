@@ -13,7 +13,7 @@ class EngineRandom extends Engine {
     color: Color): Tree = {
     val moves = tools.chessboard.generateMove(color)(tools.logBook)
     val root = Node()
-    root.copy(children = Seq((moves.toSeq(random.nextInt(moves.countM)), Node(parent = Some(root)))))
+    root.copy(children = Seq((moves.toSeq(random.nextInt(moves.countV)), Node(parent = Some(root)))))
   }
 }
 

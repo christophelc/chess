@@ -17,7 +17,7 @@ class PieceSpec extends Specification {
       val king = KingBoardImpl(White, "a1".toSquare)
       val chessboard = ChessboardImpl.empty + king
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterM(_.isTagged(TagIsMove))
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq should containTheSameElementsAs(
           Seq("a2", "b1", "b2").map(s => Move(king, s.toSquare)))
@@ -29,7 +29,7 @@ class PieceSpec extends Specification {
       val king = board.KingBoardImpl(White, "c2".toSquare)
       val chessboard = ChessboardImpl.empty + king
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterM(_.isTagged(TagIsMove))
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq should containTheSameElementsAs(
           Seq("b3", "c3", "d3", "b2", "b1", "c1", "d1", "d2").map(s => Move(king, s.toSquare)))
@@ -42,12 +42,12 @@ class PieceSpec extends Specification {
       val rook = RookBoardImpl(White, "h1".toSquare)
       val chessboard = ChessboardImpl.empty + king + rook
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterM(_.isTagged(TagIsControl))
-        .filterP(_ == king)
-        .existsM(_.dest == "g1".toSquare) should beFalse
-      generateMoveWithControl(Tools(chessboard, logBook), White).filterM(_.isTagged(TagIsMove))
-        .filterP(_ == king)
-        .existsM(_.dest == "g1".toSquare) should beTrue
+        .filterV(_.isTagged(TagIsControl))
+        .filterK(_ == king)
+        .existsV(_.dest == "g1".toSquare) should beFalse
+      generateMoveWithControl(Tools(chessboard, logBook), White).filterV(_.isTagged(TagIsMove))
+        .filterK(_ == king)
+        .existsV(_.dest == "g1".toSquare) should beTrue
     }
   }
 
@@ -58,8 +58,8 @@ class PieceSpec extends Specification {
       val knight = KnightBoardImpl(White, "g1".toSquare)
       val chessboard = ChessboardImpl.empty + king + rook + knight
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterM(_.isTagged(TagIsMove))
-        .filterP(_ == king).toSeq
+        .filterV(_.isTagged(TagIsMove))
+        .filterK(_ == king).toSeq
         .exists(_.dest == "g1".toSquare) should beFalse
     }
   }
@@ -71,9 +71,9 @@ class PieceSpec extends Specification {
       val knight = BishopBoardImpl(White, "f1".toSquare)
       val chessboard = ChessboardImpl.empty + king + rook + knight
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterM(_.isTagged(TagIsMove))
-        .filterP(_ == king)
-        .existsM(_.dest == "g1".toSquare) should beFalse
+        .filterV(_.isTagged(TagIsMove))
+        .filterK(_ == king)
+        .existsV(_.dest == "g1".toSquare) should beFalse
     }
   }
 
@@ -83,13 +83,13 @@ class PieceSpec extends Specification {
       val rook = board.RookBoardImpl(White, "a1".toSquare)
       val chessboard = ChessboardImpl.empty + king + rook
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterM(_.isTagged(TagIsControl))
-        .filterP(_ == king)
-        .existsM(_.dest == "c1".toSquare) should beFalse
+        .filterV(_.isTagged(TagIsControl))
+        .filterK(_ == king)
+        .existsV(_.dest == "c1".toSquare) should beFalse
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterM(_.isTagged(TagIsMove))
-        .filterP(_ == king)
-        .existsM(_.dest == "c1".toSquare) should beTrue
+        .filterV(_.isTagged(TagIsMove))
+        .filterK(_ == king)
+        .existsV(_.dest == "c1".toSquare) should beTrue
     }
   }
 
@@ -100,9 +100,9 @@ class PieceSpec extends Specification {
       val knight = board.KnightBoardImpl(White, "b1".toSquare)
       val chessboard = ChessboardImpl.empty + king + rook + knight
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterM(_.isTagged(TagIsMove))
-        .filterP(_ == king)
-        .existsM(_.dest == "c1".toSquare) should beFalse
+        .filterV(_.isTagged(TagIsMove))
+        .filterK(_ == king)
+        .existsV(_.dest == "c1".toSquare) should beFalse
     }
   }
 
@@ -113,8 +113,8 @@ class PieceSpec extends Specification {
       val queen = QueenBoardImpl(White, "d1".toSquare)
       val chessboard = ChessboardImpl.empty + king + rook + queen
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterM(_.isTagged(TagIsMove))
-        .filterP(_ == king).toSeq
+        .filterV(_.isTagged(TagIsMove))
+        .filterK(_ == king).toSeq
         .exists(_.dest == "c1".toSquare) should beFalse
     }
   }
@@ -124,7 +124,7 @@ class PieceSpec extends Specification {
       val bishop = board.BishopBoardImpl(White, "c2".toSquare)
       val chessboard = ChessboardImpl.empty + bishop
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterM(_.isTagged(TagIsMove))
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq should
         containTheSameElementsAs(
@@ -139,8 +139,8 @@ class PieceSpec extends Specification {
       val pawnB3 = board.PawnBoardImpl(Black, "b3".toSquare)
       val chessboard = ChessboardImpl.empty + bishop + pawnG6 + pawnB3
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterP(_ == bishop)
-        .filterM(_.isTagged(TagIsMove))
+        .filterK(_ == bishop)
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq
         .map(_.dest) should containTheSameElementsAs(
@@ -153,7 +153,7 @@ class PieceSpec extends Specification {
       val rook = board.RookBoardImpl(White, "c2".toSquare)
       val chessboard = ChessboardImpl.empty + rook
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterM(_.isTagged(TagIsMove))
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq should
         containTheSameElementsAs(
@@ -168,8 +168,8 @@ class PieceSpec extends Specification {
       val pawnG2 = board.PawnBoardImpl(Black, "g2".toSquare)
       val chessboard = ChessboardImpl.empty + rook + pawnC6 + pawnG2
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterP(_ == rook)
-        .filterM(_.isTagged(TagIsMove))
+        .filterK(_ == rook)
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq
         .map(_.dest) should containTheSameElementsAs(
@@ -182,7 +182,7 @@ class PieceSpec extends Specification {
       val queen = board.QueenBoardImpl(White, "c2".toSquare)
       val chessboard = ChessboardImpl.empty + queen
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterM(_.isTagged(TagIsMove))
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq should
         containTheSameElementsAs(
@@ -200,8 +200,8 @@ class PieceSpec extends Specification {
       val pawnB3 = board.PawnBoardImpl(Black, "b3".toSquare)
       val chessboard = ChessboardImpl.empty + queen + pawnC6 + pawnG2 + pawnG6 + pawnB3
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterP(_ == queen)
-        .filterM(_.isTagged(TagIsMove))
+        .filterK(_ == queen)
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq.map(_.dest) should containTheSameElementsAs(
           Seq("d1", "b3", "b1", "d3", "e4", "f5",
@@ -214,7 +214,7 @@ class PieceSpec extends Specification {
       val knight = board.KnightBoardImpl(White, "c2".toSquare)
       val chessboard = ChessboardImpl.empty + knight
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterM(_.isTagged(TagIsMove))
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq should containTheSameElementsAs(
           Seq("a1", "a3", "b4", "d4", "e3", "e1").map(s => Move(knight, s.toSquare)))
@@ -227,8 +227,8 @@ class PieceSpec extends Specification {
       val pawnA3 = board.PawnBoardImpl(White, "a3".toSquare)
       val chessboard = ChessboardImpl.empty + knight + pawnA3
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterP(_ == knight)
-        .filterM(_.isTagged(TagIsMove))
+        .filterK(_ == knight)
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq should containTheSameElementsAs(
           Seq("a1", "b4", "d4", "e3", "e1").map(s => Move(knight, s.toSquare)))
@@ -240,12 +240,12 @@ class PieceSpec extends Specification {
       val pawn = board.PawnBoardImpl(White, "c2".toSquare)
       val chessboard = ChessboardImpl.empty + pawn
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterM(_.isTagged(TagIsControl))
+        .filterV(_.isTagged(TagIsControl))
         .map(_.clearTags)
         .toSeq should containTheSameElementsAs(
           Seq("b3", "d3").map(s => Move(pawn, s.toSquare)))
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterM(_.isTagged(TagIsMove))
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq should containTheSameElementsAs(
           Seq("c3", "c4").map(s => Move(pawn, s.toSquare)))
@@ -258,8 +258,8 @@ class PieceSpec extends Specification {
       val pawnC4 = board.PawnBoardImpl(White, "c4".toSquare)
       val chessboard = ChessboardImpl.empty + pawn + pawnC4
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterP(_ == pawn)
-        .filterM(_.isTagged(TagIsMove))
+        .filterK(_ == pawn)
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq should containTheSameElementsAs(
           Seq("c3").map(s => Move(pawn, s.toSquare)))
@@ -272,8 +272,8 @@ class PieceSpec extends Specification {
       val pawnC4 = board.PawnBoardImpl(Black, "c4".toSquare)
       val chessboard = ChessboardImpl.empty + pawn + pawnC4
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterP(_ == pawn)
-        .filterM(_.isTagged(TagIsMove))
+        .filterK(_ == pawn)
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq should containTheSameElementsAs(
           Seq("c3").map(s => Move(pawn, s.toSquare)))
@@ -286,8 +286,8 @@ class PieceSpec extends Specification {
       val pawnC3 = board.PawnBoardImpl(Black, "c3".toSquare)
       val chessboard = ChessboardImpl.empty + pawn + pawnC3
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterP(_ == pawn)
-        .filterM(_.isTagged(TagIsMove))
+        .filterK(_ == pawn)
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq should be empty
     }
@@ -300,8 +300,8 @@ class PieceSpec extends Specification {
       val pawnC3 = board.PawnBoardImpl(Black, "d3".toSquare)
       val chessboard = ChessboardImpl.empty + pawn + pawnB3 + pawnC3
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterP(_ == pawn)
-        .filterM(_.isTagged(TagIsMove))
+        .filterK(_ == pawn)
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq.map(_.dest) should containTheSameElementsAs(
           Seq("c3", "c4", "b3", "d3").map(s => s.toSquare))
@@ -314,7 +314,7 @@ class PieceSpec extends Specification {
       val chessboard = ChessboardImpl.empty + pawn
 
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterM(_.isTagged(TagIsMove))
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq should containTheSameElementsAs(
           Seq(
@@ -331,8 +331,8 @@ class PieceSpec extends Specification {
       val pawnC8 = board.PawnBoardImpl(White, "c8".toSquare)
       val chessboard = ChessboardImpl.empty + pawn + pawnC8
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterP(_ == pawn)
-        .filterM(_.isTagged(TagIsMove))
+        .filterK(_ == pawn)
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq should be empty
     }
@@ -344,8 +344,8 @@ class PieceSpec extends Specification {
       val pawnC1 = board.RookBoardImpl(White, "c1".toSquare)
       val chessboard = ChessboardImpl.empty + pawnC1
       generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterP(_ == pawn)
-        .filterM(_.isTagged(TagIsMove))
+        .filterK(_ == pawn)
+        .filterV(_.isTagged(TagIsMove))
         .map(_.clearTags)
         .toSeq should be empty
     }

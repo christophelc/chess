@@ -12,7 +12,7 @@ class ChessboardSpec extends Specification {
 
   def generateMoveWithControl(tools: Tools, color: Color): MovesStorage =
     tools.chessboard.generateMoveWithControl(color)(tools.logBook)
-      .filterM(_.isTagged(TagIsMove))
+      .filterV(_.isTagged(TagIsMove))
 
   "A King doing small castle" should {
     "be at g1 and its rook at f1" in {
@@ -21,7 +21,7 @@ class ChessboardSpec extends Specification {
       val chessboard = ChessboardImpl.empty + king + rook
       chessboard.isCastleAvailableNow(logBook, White) should beTrue
       val move = generateMoveWithControl(Tools(chessboard, logBook), White)
-        .findM(_.dest == "g1".toSquare)
+        .findV(_.dest == "g1".toSquare)
       move.isDefined should beTrue
       val newChessboard = chessboard.play(move.get)
       val newLogBook = logBook.add(move.get)
@@ -38,7 +38,7 @@ class ChessboardSpec extends Specification {
       val chessboard = ChessboardImpl.empty + king + rook
       chessboard.isCastleAvailableNow(logBook, White) should beTrue
       val move = generateMoveWithControl(Tools(chessboard, logBook), White)
-        .findM(_.dest == "f1".toSquare)
+        .findV(_.dest == "f1".toSquare)
       move.isDefined should beTrue
       val newChessboard = chessboard.play(move.get)
       val newLogBook = logBook.add(move.get)
@@ -53,7 +53,7 @@ class ChessboardSpec extends Specification {
       val chessboard = ChessboardImpl.empty + pawn
       val promoted = board.RookBoardImpl(White, "c8".toSquare)
       val move = generateMoveWithControl(Tools(chessboard, logBook), White)
-        .findM {
+        .findV {
           case Promotion(_, newPiece, _, _) => newPiece match {
             case _: Rook => true
             case _ => false
@@ -70,7 +70,7 @@ class ChessboardSpec extends Specification {
       val chessboard = ChessboardImpl.empty + pawn
       val promoted = KnightBoardImpl(White, "c8".toSquare)
       val move = generateMoveWithControl(Tools(chessboard, logBook), White)
-        .findM {
+        .findV {
           case Promotion(_, newPiece, _, _) => newPiece match {
             case _: Knight => true
             case _ => false
@@ -87,7 +87,7 @@ class ChessboardSpec extends Specification {
       val chessboard = ChessboardImpl.empty + pawn
       val promoted = BishopBoardImpl(White, "c8".toSquare)
       val move = generateMoveWithControl(Tools(chessboard, logBook), White)
-        .findM {
+        .findV {
           case Promotion(_, newPiece, _, _) => newPiece match {
             case _: Bishop => true
             case _ => false
@@ -109,7 +109,7 @@ class ChessboardSpec extends Specification {
       val promoted = QueenBoardImpl(White, "c8".toSquare)
       val moves: MovesStorage = generateMoveWithControl(tools, White)
       val move = moves
-        .findM {
+        .findV {
           case Promotion(_, newPiece, _, _) => newPiece match {
             case _: Queen => true
             case _ => false
@@ -130,10 +130,10 @@ class ChessboardSpec extends Specification {
         logBook = logBook)
       val promoted = board.QueenBoardImpl(White, "b8".toSquare)
       val moves = generateMoveWithControl(tools, White)
-        .filterM(_.isTagged(TagIsMove))
+        .filterV(_.isTagged(TagIsMove))
       val move = moves
-        .filterM(_.dest == "b8".toSquare)
-        .findM {
+        .filterV(_.dest == "b8".toSquare)
+        .findV {
           case Promotion(_, newPiece, _, _) => newPiece match {
             case _: Queen => true
             case _ => false
@@ -156,13 +156,13 @@ class ChessboardSpec extends Specification {
         chessboard = ChessboardImpl.empty + pawnEp + takingPawn + king,
         logBook = logBook)
       val move: Option[GenericMove] = generateMoveWithControl(tools, White)
-        .findM(_.dest == "c4".toSquare)
+        .findV(_.dest == "c4".toSquare)
       move.isDefined should beTrue
       val newChessboard = tools.chessboard.play(move.get)
       val newTools = tools.copy(logBook = tools.logBook.add(move.get))
       val moves = generateMoveWithControl(Tools(newChessboard, newTools.logBook), Black)
       val moveEp: Option[GenericMove] = moves
-        .findM(_.dest == "c3".toSquare)
+        .findV(_.dest == "c3".toSquare)
       moveEp.isDefined should beTrue
       moveEp.get.show(newTools, moves) shouldEqual ("bxc3")
       newChessboard.play(moveEp.get) shouldEqual ChessboardImpl.empty + expectedEp + king

@@ -28,23 +28,23 @@ object Score {
       0
   }
   def value(color: Color, pieces: Pieces): Int = {
-    val piecePerColor = pieces.groupByColor
-    piecePerColor(color).list.map(value).sum - piecePerColor(color.invert).list.map(value).sum
+    val piecePerColor = pieces.toSeq.groupBy(_.color)
+    piecePerColor(color).map(value).sum - piecePerColor(color.invert).map(value).sum
   }
 
   // opening
   def developmentBishopKnight(color: Color, controls: MovesStorage): Int = {
-    controls.filterP {
+    controls.filterK {
       case piece: Knight => piece.color == color
       case piece: Bishop => piece.color == color
       case _ => false
-    }.countM * 10
+    }.countV * 10
   }
 
   def developmentRook(color: Color, chessboard: Chessboard): Int = {
     val rooks = chessboard.pieces.rooks
     if (rooks.count == 2 &&
-      rooks.list.head.position.squaresStrictlyBetween(rooks.list.last.position).forall(
+      rooks.toSeq.head.position.squaresStrictlyBetween(rooks.toSeq.last.position).forall(
         square => chessboard.get(square).isEmpty)) {
       5
     } else
@@ -71,22 +71,22 @@ object Score {
   }
 
   def squareControl(color: Color, tools: Tools): Int = {
-    developmentBishopKnight(color, tools.chessboard.moves.filterM(_.isTagged(TagIsControl))) +
+    developmentBishopKnight(color, tools.chessboard.moves.filterV(_.isTagged(TagIsControl))) +
       developmentRook(color, tools.chessboard)
   }
 
   def queenActivate(color: Color, controls: MovesStorage): Int = {
-    controls.filterP {
+    controls.filterK {
       case queen: Queen if (queen.color == color) => true
       case _ => false
-    }.countM * 5
+    }.countV * 5
   }
 
   def rookActivate(color: Color, controls: MovesStorage): Int = {
-    controls.filterP {
+    controls.filterK {
       case rook: Rook if (rook.color == color) => true
       case _ => false
-    }.countM * 5
+    }.countV * 5
   }
 
   def evaluateOpening(target: Target, color: Color, tools: Tools): Int = {
@@ -102,7 +102,7 @@ object Score {
         developmentRook(color, tools.chessboard) - developmentRook(color.invert, tools.chessboard)
       case SecurityKingMiddleGame => kingSecurity(tools, color)
       case SquareControl =>
-        val controls = tools.chessboard.moves.filterM(_.isTagged(TagIsControl))
+        val controls = tools.chessboard.moves.filterV(_.isTagged(TagIsControl))
         squareControl(color, tools) - squareControl(color.invert, tools) +
           queenActivate(color, controls) - queenActivate(color.invert, controls) +
           rookActivate(color, controls) - rookActivate(color.invert, controls)

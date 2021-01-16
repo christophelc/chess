@@ -1,10 +1,11 @@
 package dto
 
-import model.Chessboard.NoPiece
 import model.Square._
+import model.board.PiecesSeq.EmptyPieces
 import model.board._
 import model.{ Chessboard, board, _ }
 import model.board.RichSquare._
+
 import scala.util.matching.Regex
 
 case class ChessboardDto(encoded: String)
@@ -20,14 +21,14 @@ class SimpleChessboardCodec extends Codec {
 
   import SimpleChessboardCodec._
 
-  private def encodeOneColor(pieces: Pieces): String = {
-    pieces.list.sortBy(piece => s"${PieceDto.toStringLong(piece)}${piece.position.toString}")
+  private def encodeOneColor(pieces: Seq[Piece]): String = {
+    pieces.sortBy(piece => s"${PieceDto.toStringLong(piece)}${piece.position.toString}")
       .map(PieceDto.toStringLong)
       .mkString("")
   }
 
   override def encode(chessboard: Chessboard): ChessboardDto = {
-    val piecesPerColor: Map[Color, Pieces] = chessboard.pieces.groupByColor
+    val piecesPerColor: Map[Color, Seq[Piece]] = chessboard.pieces.toSeq.groupBy(_.color)
     ChessboardDto(encodeOneColor(piecesPerColor(White)) +
       colorSeparator +
       encodeOneColor(piecesPerColor(Black)))
@@ -41,15 +42,23 @@ class SimpleChessboardCodec extends Codec {
     val piecesBlackDto = piecesPerColor(1)
     require(piecesWhiteDto.length % 3 == 0)
     require(piecesBlackDto.length % 3 == 0)
-    val piecesWhite = PiecesSeq(piecesWhiteDto.toSeq.grouped(3).map(pieceDto => PieceDto.toPiece(White, pieceDto.toString())).toSeq)
-    val piecesBlack = PiecesSeq(piecesBlackDto.toSeq.grouped(3).map(pieceDto => PieceDto.toPiece(Black, pieceDto.toString())).toSeq)
+    val piecesWhite = PiecesSeq.build(
+      piecesWhiteDto
+        .toSeq
+        .grouped(3)
+        .map(pieceDto => PieceDto.toPiece(White, pieceDto.toString())).toSeq)
+    val piecesBlack = PiecesSeq.build(
+      piecesBlackDto
+        .toSeq
+        .grouped(3)
+        .map(pieceDto => PieceDto.toPiece(Black, pieceDto.toString())).toSeq)
     ChessboardImpl(piecesWhite.union(piecesBlack))
   }
 }
 
 class FENCodec {
   private def readLine(row: Row, line: String): Pieces = {
-    case class Acc(col: Col = colA, pieces: Pieces = PiecesSeq(NoPiece))
+    case class Acc(col: Col = colA, pieces: Pieces = EmptyPieces)
     line.toCharArray.foldLeft(Acc())((acc, c) => {
       val square = SquareXY(row = row, col = acc.col)
       if (c.isLetter) {
@@ -143,14 +152,15 @@ class FENCodec {
     val s = (for (i <- 0 to 7) yield "([rnbqkpRNBQKP1-8]+)").mkString("/") + """\s([b|w])\s(-|[K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$"""
     val pattern = new Regex(s"^$s")
     val pattern(line8, line7, line6, line5, line4, line3, line2, line1, whichPlayer, castle, ep, plyCaptureAndMove) = chessboardDto.encoded
-    val pieces = (for ((line, idx) <- Seq(line1, line2, line3, line4, line5, line6, line7, line8).zipWithIndex) yield readLine(row = Row(idx), line).list).flatten
+    val pieces = (for ((line, idx) <- Seq(line1, line2, line3, line4, line5, line6, line7, line8).zipWithIndex)
+      yield readLine(row = Row(idx), line).toSeq).flatten
     ChessGame(
       playerBlack = PlayerReal("Black"),
       playerWhite = PlayerReal("White"),
       whichPlayerTurn = if (whichPlayer == "w") White else Black,
       tools = Tools(
         chessboard = board.ChessboardImpl(
-          pieces = PiecesSeq(pieces)),
+          pieces = PiecesSeq.build(pieces)),
         logBook = LogBook(
           smallCastlingForbiddenWhite = !castle.contains("K"),
           greatCastlingForbiddenWhite = !castle.contains("Q"),

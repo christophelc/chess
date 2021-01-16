@@ -17,7 +17,7 @@ object CodecBitmap {
     (if (byte.toInt >= 6) Black else White, byte.toInt % 6)
 
   def encode(chessboard: Chessboard): Seq[Bitmap] = {
-    val groupBy = chessboard.pieces.list
+    val groupBy = chessboard.pieces.toSeq
       .groupBy(piece => (piece.color, piece.id))
     groupBy.map {
       case (key, pieces) =>
@@ -46,7 +46,7 @@ object CodecBitmap {
           }
         })
     }
-    ChessboardImpl(PiecesSeq(pieces))
+    ChessboardImpl(PiecesSeq.build(pieces))
   }
 }
 

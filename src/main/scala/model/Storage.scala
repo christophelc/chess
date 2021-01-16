@@ -1,69 +1,69 @@
 package model
 
-trait Storage[P, M] {
-  val store: Map[P, Seq[M]] = Map()
+trait Storage[K, V] {
+  val store: Map[K, Seq[V]] = Map()
 
   /**
    * Erase all
    * @return an empty Storage object
    */
-  def clear: Storage[P, M]
+  def clear: Storage[K, V]
 
   /**
    * Erase the entry for the key p
-   * @param p
+   * @param k
    * @return
    */
-  def del(p: P): Storage[P, M]
+  def del(k: K): Storage[K, V]
 
   /**
    * Replace if exist p -> m
-   * @param p the key
-   * @param m the sequence of values
+   * @param k the key
+   * @param v the sequence of values
    * @return the update storage object
    */
-  def put(p: P)(m: Seq[M]): Storage[P, M]
+  def put(k: K)(v: Seq[V]): Storage[K, V]
 
   /**
    * Add the entry p with the values m. If there are already existing values,
    * we add them.
-   * @param p
-   * @param m
+   * @param k key
+   * @param v value
    * @return
    */
-  def add(p: P)(m: Seq[M]): Storage[P, M]
+  def add(k: K)(v: Seq[V]): Storage[K, V]
 
-  def add(storage: Storage[P, M]): Storage[P, M]
+  def add(storage: Storage[K, V]): Storage[K, V]
 
   /**
    * Filter other all the values
-   * @param condM
+   * @param condV
    * @return the new object
    */
-  def filterM(condM: M => Boolean): Storage[P, M]
+  def filterV(condV: V => Boolean): Storage[K, V]
 
   /**
    * Filter other all the keys
-   * @param condP
+   * @param condK condition over key
    * @return the new object
    */
-  def filterP(condP: P => Boolean): Storage[P, M]
+  def filterK(condK: K => Boolean): Storage[K, V]
 
-  def findM(condM: M => Boolean): Option[M]
+  def findV(condV: V => Boolean): Option[V]
 
-  def existsM(condM: M => Boolean): Boolean
+  def existsV(condV: V => Boolean): Boolean
 
   def isEmpty: Boolean
 
   def nonEmpty: Boolean = !isEmpty
 
-  def toSeq: Seq[M]
+  def toSeq: Seq[V]
 
-  def map(f: M => M): Storage[P, M]
+  def map(f: V => V): Storage[K, V]
 
   /**
    * Sum the size of all the values
    * @return the sum
    */
-  def countM: Int
+  def countV: Int
 }

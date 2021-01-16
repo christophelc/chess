@@ -5,8 +5,6 @@ import model.Chessboard.{ EndGame, MovesStorage }
 import model.Piece.idRook
 
 trait Chessboard {
-  type Moves
-
   val moves: MovesStorage
   def pieces: Pieces
   val endGame: Option[EndGame] = None
@@ -70,5 +68,4 @@ object Chessboard {
   case object EndgameByCheckPat extends EndGame
   case object EndgameByCheckMat extends EndGame
 
-  val NoPiece: Seq[Piece] = Nil
 }

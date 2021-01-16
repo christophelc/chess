@@ -33,14 +33,14 @@ class ScoreSpec extends Specification {
       val chessboard = ChessboardImpl()
       val tools = Tools(chessboard, logBook)
       val moveNC3 = generateMoveWithControl(Tools(chessboard, logBook), White)
-        .filterP(p => p.id == idKnight && p.position.whichCol == Square.colB)
-        .findM(_.dest.whichCol == Square.colC)
+        .filterK(p => p.id == idKnight && p.position.whichCol == Square.colB)
+        .findV(_.dest.whichCol == Square.colC)
       moveNC3.isDefined should beTrue
       val move = moveNC3.get
       val tools2 = tools.playAndUpdateControls(move)
       val moves = tools2.chessboard.moves
-      val controls = moves.filterM(_.isTagged(TagIsControl))
-      controls.countM shouldEqual 82
+      val controls = moves.filterV(_.isTagged(TagIsControl))
+      controls.countV shouldEqual 82
       val score = Score.evaluate(Black, tools2)
       Score.developmentBishopKnight(Black, controls) shouldEqual 100
       Score.developmentBishopKnight(White, controls) shouldEqual 150

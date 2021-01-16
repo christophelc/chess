@@ -3,13 +3,12 @@ package model
 import model.Chessboard.MovesStorage
 
 trait Pieces {
-  def list: Seq[Piece]
+  def toSeq: Seq[Piece]
   def count: Int
   def union(pieces: Pieces): Pieces
   def withColor(color: Color): Pieces
   def isEmpty: Boolean
   def nonEmpty: Boolean = !isEmpty
-  def groupByColor: Map[Color, Pieces]
   def pawns: Pieces
   def rooks: Pieces
   def bishops: Pieces

@@ -2,7 +2,6 @@ package model
 
 import model.Chessboard.MovesStorage
 import model.Piece._
-import model.board.RichSquare.SquareXYFromString
 import model.Square.{ row2, row7 }
 
 object Piece {

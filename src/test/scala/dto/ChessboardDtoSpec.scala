@@ -12,7 +12,7 @@ class ChessboardDtoSpec extends Specification {
       val codec = new SimpleChessboardCodec()
       val chessboardDto = ChessboardDto("KA1" + SimpleChessboardCodec.colorSeparator + "KA8")
       val chessboard = codec.decode(chessboardDto)
-      chessboard must equalTo(ChessboardImpl(pieces = PiecesSeq(
+      chessboard must equalTo(ChessboardImpl(pieces = PiecesSeq.build(
         Seq(
           KingBoardImpl(White, "a1".toSquare),
           board.KingBoardImpl(Black, "a8".toSquare)))))
