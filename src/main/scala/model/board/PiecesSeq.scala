@@ -3,14 +3,7 @@ package model.board
 import model.Chessboard.MovesStorage
 import model.Piece._
 import model._
-import model.board.PiecesSeq.PiecesAsSeq
 import model.board.StorageImpl.emptyMoveStorage
-
-object PiecesSeq {
-  type PiecesAsSeq = Storage[PieceId, Piece]
-  val EmptyPieces: PiecesSeq = PiecesSeq(Nil)
-  def build(pieces: Seq[Piece]): PiecesSeq = PiecesSeq(pieces)
-}
 
 case class PiecesSeq(pieces: Seq[Piece]) extends Pieces {
   override def toSeq: Seq[Piece] = pieces
@@ -22,11 +15,6 @@ case class PiecesSeq(pieces: Seq[Piece]) extends Pieces {
   override def withColor(color: Color): Pieces =
     this.copy(pieces = pieces.filter(_.color == color))
   override def isEmpty: Boolean = pieces.isEmpty
-  //  override def groupByColor: Map[Color, Pieces] =
-  //    pieces
-  //      .toSeq
-  //      .groupBy(_.color)
-  //      .map { case (k, seqV) => k -> seqV }
   override def pawns: Pieces = this.copy(pieces =
     pieces.filter(_.id == idPawn))
 

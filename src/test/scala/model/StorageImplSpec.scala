@@ -1,7 +1,7 @@
 package model
 
 import model.Piece.PieceId
-import model.board.{ KingBoardImpl, PiecesSeq, RookBoardImpl, StorageImpl }
+import model.board.{ KingBoardImpl, RookBoardImpl, StorageImpl }
 import model.board.RichSquare._
 import org.specs2.mutable.Specification
 
@@ -25,7 +25,6 @@ class StorageImplSpec extends Specification {
         .add(rook.id)(Seq(rook))
       s.isEmpty should beFalse
       s.nonEmpty should beTrue
-      PiecesSeq.build(Seq(king, rook)).isEmpty should beFalse
     }
   }
 

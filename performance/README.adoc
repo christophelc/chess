@@ -1,0 +1,57 @@
+Performance comparison
+======================
+
+Description
+-----------
+The aim of this documument is to keep track of the different solutions we tried and compare their performance impact.
+
+Estimation
+----------
+
+The measures done on the JVM during a short period of time (a few minutes) can be inaccurate. When they look unrealistic, we just stop and restart the program.
+
+
+Storage
+-------
+
+It concerns:
+
+- Pieces inside Chessboard
+
+- Moves generated
+
+Until now, we will only use immutable data. The priority is not optimization at any price. We will first improve the code quality and make it flexible.
+We just want to improve as much as possible the speed and improve the design so that we can replace easily any part of
+the program by another one (more efficient).
+
+=== Pieces storage
+
+We tried:
+
+1- Seq[Piece]
+
+2- 6 x Seq[Piece], one per type of piece
+
+3- StorageImpl[PieceId, Piece] which is like a Map[PieceId, Piece]
+
+The 2nd solution is 2 times slower than the first one. The t
+The 3rd one is 2 times slower than the first. 
+The last one is very slow. In fact, the Map used is immutable and since we are modifying a lot the pieces stored, a lot of times is wasted to duplicate data.
+
+=== Moves storage
+
+For each player turn, we are generating moves. We need to store this moves somewhere. In fact, it appears that knowing the control squares could be interseting. 
+
+We are currently storing the moves inside the Tree of all possible moves managed by Engines. We keep the information of the squares control inside the chessboard.
+Keeping track of that induces an memory overhead. But this is a relevant information for a chess player.
+
+We tried 2 implementations:
+
+1- a Seq[GenericMove] for squares control. We do not store the another Seq[GenericMove] used for real moves since they are generated on the fly and only
+stored in the Trees of the Engines, not in the Chessboard.
+
+2- a Seq[GenericMove] where here GenericMove contains Tags. A tag defines if a GenericMove means a real move or a control square
+
+Both solutions give almost the same performance result. The second solution is far more powerful since it will give us the possibility to genrate moves by difference. With that in mind, we will expect that the moves generation will be between 6 times and 10 times faster.
+
+

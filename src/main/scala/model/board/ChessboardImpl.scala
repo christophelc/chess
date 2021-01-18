@@ -5,7 +5,6 @@ import model.Chessboard.{ EndGame, MovesStorage }
 import RichSquare.SquareXYFromString
 import model.Square._
 import model._
-import model.board.PiecesSeq.EmptyPieces
 import model.board.StorageImpl.emptyMoveStorage
 
 case class ChessboardImpl(
@@ -152,13 +151,30 @@ case class ChessboardImpl(
 }
 
 object ChessboardImpl {
+  import model.Piece._
+
+  // choose implementation for the storage of pieces
+  //  val EmptyPieces: Pieces = PiecesBoard(Nil)
+  //  def buildPieces(pieces: Seq[Piece]): Pieces = {
+  //    val groups = pieces.groupBy(_.id)
+  //    PiecesBoard(
+  //      _rooks = groups.getOrElse(idRook, Nil),
+  //      _bishops = groups.getOrElse(idBishop, Nil),
+  //      _knights = groups.getOrElse(idKnight, Nil),
+  //      _queens = groups.getOrElse(idQueen, Nil),
+  //      _kings = groups.getOrElse(idKing, Nil),
+  //      _pawns = groups.getOrElse(idPawn, Nil))
+  //  }
+  val EmptyPieces: Pieces = PiecesSeq(Nil)
+  val empty: ChessboardImpl = ChessboardImpl(EmptyPieces)
+  def buildPieces(pieces: Seq[Piece]): Pieces = PiecesSeq(pieces)
+
   def apply(): ChessboardImpl = {
     board.ChessboardImpl(initialState)
   }
+  def build(pieces: Seq[Pieces]): Chessboard = empty
 
-  val empty: ChessboardImpl = ChessboardImpl(EmptyPieces)
-
-  val initialState: Pieces = PiecesSeq.build(
+  val pieces: Seq[Piece] =
     Seq(
       board.RookBoardImpl(White, "a1".toSquare),
       KnightBoardImpl(White, "b1".toSquare),
@@ -183,5 +199,7 @@ object ChessboardImpl {
         PawnBoardImpl(
           Black,
           SquareXY(row = row7, col = Col(col)))))
-      .flatten)
+      .flatten
+
+  val initialState: Pieces = buildPieces(pieces)
 }

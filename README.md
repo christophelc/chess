@@ -117,8 +117,8 @@ moves skipped, per second
 To be able to stop and start engine on demand, we will continue using
 the Akka actor model.
 
-Chess rules:
-------------
+Chess rules
+-----------
 
 We need to manage clocks with 2 timers per chess game
 

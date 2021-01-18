@@ -1,6 +1,7 @@
 package model
 
 import model.Chessboard.MovesStorage
+import model.Piece.{ idKing, idPawn }
 import org.specs2.mutable.Specification
 import model.board.RichSquare._
 import model.board.StorageImpl.emptyMoveStorage
@@ -21,6 +22,7 @@ class ChessboardSpec extends Specification {
       val chessboard = ChessboardImpl.empty + king + rook
       chessboard.isCastleAvailableNow(logBook, White) should beTrue
       val move = generateMoveWithControl(Tools(chessboard, logBook), White)
+        .filterK(_.id == idKing)
         .findV(_.dest == "g1".toSquare)
       move.isDefined should beTrue
       val newChessboard = chessboard.play(move.get)
@@ -38,6 +40,7 @@ class ChessboardSpec extends Specification {
       val chessboard = ChessboardImpl.empty + king + rook
       chessboard.isCastleAvailableNow(logBook, White) should beTrue
       val move = generateMoveWithControl(Tools(chessboard, logBook), White)
+        .filterK(_.id == idKing)
         .findV(_.dest == "f1".toSquare)
       move.isDefined should beTrue
       val newChessboard = chessboard.play(move.get)
@@ -109,6 +112,7 @@ class ChessboardSpec extends Specification {
       val promoted = QueenBoardImpl(White, "c8".toSquare)
       val moves: MovesStorage = generateMoveWithControl(tools, White)
       val move = moves
+        .filterK(_.id == idPawn)
         .findV {
           case Promotion(_, newPiece, _, _) => newPiece match {
             case _: Queen => true

@@ -1,7 +1,6 @@
 package dto
 
 import model.Square._
-import model.board.PiecesSeq.EmptyPieces
 import model.board._
 import model.{ Chessboard, board, _ }
 import model.board.RichSquare._
@@ -42,12 +41,12 @@ class SimpleChessboardCodec extends Codec {
     val piecesBlackDto = piecesPerColor(1)
     require(piecesWhiteDto.length % 3 == 0)
     require(piecesBlackDto.length % 3 == 0)
-    val piecesWhite = PiecesSeq.build(
+    val piecesWhite = ChessboardImpl.buildPieces(
       piecesWhiteDto
         .toSeq
         .grouped(3)
         .map(pieceDto => PieceDto.toPiece(White, pieceDto.toString())).toSeq)
-    val piecesBlack = PiecesSeq.build(
+    val piecesBlack = ChessboardImpl.buildPieces(
       piecesBlackDto
         .toSeq
         .grouped(3)
@@ -58,7 +57,7 @@ class SimpleChessboardCodec extends Codec {
 
 class FENCodec {
   private def readLine(row: Row, line: String): Pieces = {
-    case class Acc(col: Col = colA, pieces: Pieces = EmptyPieces)
+    case class Acc(col: Col = colA, pieces: Pieces = ChessboardImpl.EmptyPieces)
     line.toCharArray.foldLeft(Acc())((acc, c) => {
       val square = SquareXY(row = row, col = acc.col)
       if (c.isLetter) {
@@ -160,7 +159,7 @@ class FENCodec {
       whichPlayerTurn = if (whichPlayer == "w") White else Black,
       tools = Tools(
         chessboard = board.ChessboardImpl(
-          pieces = PiecesSeq.build(pieces)),
+          pieces = ChessboardImpl.buildPieces(pieces)),
         logBook = LogBook(
           smallCastlingForbiddenWhite = !castle.contains("K"),
           greatCastlingForbiddenWhite = !castle.contains("Q"),
