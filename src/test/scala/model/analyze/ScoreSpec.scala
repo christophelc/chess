@@ -5,7 +5,6 @@ import model._
 import model.Piece._
 import org.specs2.mutable.Specification
 import model.board.RichSquare._
-import model.board.StorageImpl.emptyMoveStorage
 import model.board._
 
 class ScoreSpec extends Specification {
@@ -16,11 +15,11 @@ class ScoreSpec extends Specification {
   "MAterial position" should {
     "be scored" in {
       val logBook = LogBook()
-      val kingWhite = KingBoardImpl(White, "e1".toSquare)
-      val rookWhite = RookBoardImpl(White, "h1".toSquare)
+      val kingWhite = KingBoard(White, "e1".toSquare)
+      val rookWhite = RookBoard(White, "h1".toSquare)
       val bishopBlack = BishopBoardImpl(Black, "a8".toSquare)
-      val kingBlack = KingBoardImpl(Black, "e8".toSquare)
-      val chessboard = ChessboardImpl.empty + kingWhite + kingBlack + rookWhite + bishopBlack
+      val kingBlack = KingBoard(Black, "e8".toSquare)
+      val chessboard = ChessboardImpl.emptyChessboard + kingWhite + kingBlack + rookWhite + bishopBlack
       val tools = Tools(chessboard, logBook)
       val score = Score.evaluate(White, tools)
       score shouldEqual 200

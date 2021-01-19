@@ -5,11 +5,61 @@ import model.Chessboard.{ EndGame, MovesStorage }
 import RichSquare.SquareXYFromString
 import model.Square._
 import model._
-import model.board.StorageImpl.emptyMoveStorage
+import model.data.StorageMap
+
+trait ChessboardInitSeqImpl extends ChessboardInit {
+  val emptyPieces: Pieces = PiecesSeq.EmptyPieces
+  def buildPieces(pieces: Seq[Piece]): Pieces = PiecesSeq.build(pieces)
+
+}
+trait ChessboardInitBoardImpl extends ChessboardInit {
+  val emptyPieces: Pieces = PiecesBoard.EmptyPieces
+  def buildPieces(pieces: Seq[Piece]): Pieces = PiecesBoard.build(pieces)
+}
+
+object ChessboardImpl extends ChessboardInitSeqImpl {
+
+  val pieces: Seq[Piece] =
+    Seq(
+      board.RookBoard(White, "a1".toSquare),
+      KnightBoard(White, "b1".toSquare),
+      BishopBoardImpl(White, "c1".toSquare),
+      QueenBoard(White, "d1".toSquare),
+      board.KingBoard(White, "e1".toSquare),
+      board.BishopBoardImpl(White, "f1".toSquare),
+      board.KnightBoard(White, "g1".toSquare),
+      board.RookBoard(White, "h1".toSquare),
+      board.RookBoard(Black, "a8".toSquare),
+      board.KnightBoard(Black, "b8".toSquare),
+      board.BishopBoardImpl(Black, "c8".toSquare),
+      board.QueenBoard(Black, "d8".toSquare),
+      board.KingBoard(Black, "e8".toSquare),
+      board.BishopBoardImpl(Black, "f8".toSquare),
+      board.KnightBoard(Black, "g8".toSquare),
+      board.RookBoard(Black, "h8".toSquare)) ++
+      (for (col <- 0 to 7) yield Seq(
+        PawnBoard(
+          White,
+          SquareXY(row = row2, col = Col(col))),
+        PawnBoard(
+          Black,
+          SquareXY(row = row7, col = Col(col)))))
+      .flatten
+
+  override val emptyMove: MovesStorage = StorageMap.EmptyMoveStorage
+  override val emptyChessboard: Chessboard = ChessboardImpl(emptyPieces)
+  override val initialState: Pieces = buildPieces(pieces)
+
+  def apply(): ChessboardImpl = {
+    board.ChessboardImpl(initialState)
+  }
+}
+
+import ChessboardImpl.emptyMove
 
 case class ChessboardImpl(
   override val pieces: Pieces,
-  override val moves: MovesStorage = StorageImpl.emptyMoveStorage,
+  override val moves: MovesStorage = ChessboardImpl.emptyMove,
   override val endGame: Option[EndGame] = None) extends Chessboard with LazyLogging {
 
   def +(piece: Piece): Chessboard = {
@@ -38,7 +88,7 @@ case class ChessboardImpl(
       king.position,
       moves.filterV(_.isTagged(TagIsControl))
         .filterK(_.color == color.invert))
-    val kingsMove: MovesStorage = emptyMoveStorage
+    val kingsMove: MovesStorage = emptyMove
       .add(
         moves
           .filterK(_ == king)
@@ -57,7 +107,7 @@ case class ChessboardImpl(
           case _: Rook | _: Bishop | _: Queen =>
             val squaresForHidingCheck = king.position.squaresStrictlyBetween(attackers.head.position)
             moves.filterV(move => squaresForHidingCheck.contains(move.dest))
-          case _ => emptyMoveStorage
+          case _ => emptyMove
         }
         kingsMove
           .add(takeAttackingPiece)
@@ -148,58 +198,4 @@ case class ChessboardImpl(
     }).mkString("\n")
     Seq("  " + axisX, board, "  " + axisX).mkString("\n")
   }
-}
-
-object ChessboardImpl {
-  import model.Piece._
-
-  // choose implementation for the storage of pieces
-  //  val EmptyPieces: Pieces = PiecesBoard(Nil)
-  //  def buildPieces(pieces: Seq[Piece]): Pieces = {
-  //    val groups = pieces.groupBy(_.id)
-  //    PiecesBoard(
-  //      _rooks = groups.getOrElse(idRook, Nil),
-  //      _bishops = groups.getOrElse(idBishop, Nil),
-  //      _knights = groups.getOrElse(idKnight, Nil),
-  //      _queens = groups.getOrElse(idQueen, Nil),
-  //      _kings = groups.getOrElse(idKing, Nil),
-  //      _pawns = groups.getOrElse(idPawn, Nil))
-  //  }
-  val EmptyPieces: Pieces = PiecesSeq(Nil)
-  val empty: ChessboardImpl = ChessboardImpl(EmptyPieces)
-  def buildPieces(pieces: Seq[Piece]): Pieces = PiecesSeq(pieces)
-
-  def apply(): ChessboardImpl = {
-    board.ChessboardImpl(initialState)
-  }
-  def build(pieces: Seq[Pieces]): Chessboard = empty
-
-  val pieces: Seq[Piece] =
-    Seq(
-      board.RookBoardImpl(White, "a1".toSquare),
-      KnightBoardImpl(White, "b1".toSquare),
-      BishopBoardImpl(White, "c1".toSquare),
-      QueenBoardImpl(White, "d1".toSquare),
-      board.KingBoardImpl(White, "e1".toSquare),
-      board.BishopBoardImpl(White, "f1".toSquare),
-      board.KnightBoardImpl(White, "g1".toSquare),
-      board.RookBoardImpl(White, "h1".toSquare),
-      board.RookBoardImpl(Black, "a8".toSquare),
-      board.KnightBoardImpl(Black, "b8".toSquare),
-      board.BishopBoardImpl(Black, "c8".toSquare),
-      board.QueenBoardImpl(Black, "d8".toSquare),
-      board.KingBoardImpl(Black, "e8".toSquare),
-      board.BishopBoardImpl(Black, "f8".toSquare),
-      board.KnightBoardImpl(Black, "g8".toSquare),
-      board.RookBoardImpl(Black, "h8".toSquare)) ++
-      (for (col <- 0 to 7) yield Seq(
-        PawnBoardImpl(
-          White,
-          SquareXY(row = row2, col = Col(col))),
-        PawnBoardImpl(
-          Black,
-          SquareXY(row = row7, col = Col(col)))))
-      .flatten
-
-  val initialState: Pieces = buildPieces(pieces)
 }

@@ -3,9 +3,11 @@ package model.board
 import model.Chessboard.MovesStorage
 import model.Piece._
 import model._
-import model.board.StorageImpl.emptyMoveStorage
+import model.data.StorageMap.EmptyMoveStorage
 
 object PiecesBoard {
+  val EmptyPieces: Pieces = PiecesBoard(Nil)
+
   def build(pieces: Seq[Piece]): PiecesBoard = {
     val groups = pieces.groupBy(_.id)
     PiecesBoard(
@@ -84,7 +86,7 @@ case class PiecesBoard(
   }
   override def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesStorage =
     toSeq.map(_.whereToGo(chessboard = chessboard)(logBook = logBook))
-      .foldLeft(emptyMoveStorage)((acc, movesWithControl) => acc.add(movesWithControl))
+      .foldLeft(EmptyMoveStorage)((acc, movesWithControl) => acc.add(movesWithControl))
 
   override def containsSameElementAs(piecesSeq: Pieces): Boolean = piecesSeq match {
     case piecesCompare: PiecesBoard => toSeq.toSet == piecesCompare.toSeq.toSet

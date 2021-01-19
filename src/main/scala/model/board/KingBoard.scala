@@ -4,7 +4,7 @@ import RichSquare.SquareXYFromString
 import model.Chessboard.MovesStorage
 import model.{ Black, Chessboard, Color, Direction, GenericMove, King, LogBook, Piece, Square, White }
 
-object KingBoardImpl {
+object KingBoard {
   final val e1 = "e1".toSquare
   final val e8 = "e8".toSquare
   def initialPosition(color: Color): Square = color match {
@@ -13,7 +13,7 @@ object KingBoardImpl {
   }
 }
 
-case class KingBoardImpl(
+case class KingBoard(
   override val color: Color,
   override val position: Square) extends PieceBoard(color, position) with King {
 

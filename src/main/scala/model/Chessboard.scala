@@ -3,6 +3,15 @@ package model
 import dto.CodecBitmap
 import model.Chessboard.{ EndGame, MovesStorage }
 import model.Piece.idRook
+import model.data.Storage
+
+trait ChessboardInit {
+  def buildPieces(pieces: Seq[Piece]): Pieces
+  val emptyChessboard: Chessboard
+  val emptyPieces: Pieces
+  val emptyMove: MovesStorage
+  val initialState: Pieces
+}
 
 trait Chessboard {
   val moves: MovesStorage

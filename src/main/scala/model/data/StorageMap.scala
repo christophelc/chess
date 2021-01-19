@@ -1,24 +1,26 @@
-package model.board
+package model.data
 
-import model.Chessboard.MovesStorage
-import model.Storage
+import model.{ GenericMove, Piece }
 
-object StorageImpl {
-  val emptyMoveStorage: MovesStorage = StorageImpl(store = Map())
+object StorageMap {
+  val EmptyMoveStorage: Storage[Piece, GenericMove] = StorageMap(store = Map())
 }
 
-case class StorageImpl[K, V](override val store: Map[K, Seq[V]] = Map[K, Seq[V]]()) extends Storage[K, V] {
+case class StorageMap[K, V](override val store: Map[K, Seq[V]] = Map[K, Seq[V]]()) extends Storage[K, V] {
+  override type Store = Map[K, Seq[V]]
+
   override def clear: Storage[K, V] = this.copy(store = Map())
   override def del(k: K): Storage[K, V] = this.copy(store = store - k)
+  override def get(k: K): Seq[V] = store.getOrElse(k, Nil)
   override def put(k: K)(v: Seq[V]): Storage[K, V] = this.copy(store = store ++ Map(k -> v))
   override def add(k: K)(v: Seq[V]): Storage[K, V] = store.get(k) match {
     case Some(vOld) => this.copy(store = (store - k) ++ Map(k -> (vOld ++ v)))
     case None => this.copy(store = store ++ Map(k -> v))
   }
   override def add(storage: Storage[K, V]): Storage[K, V] = {
-    val storeAdd: Map[K, Seq[V]] = storage.store
-    storeAdd.keySet.foldLeft(this: Storage[K, V])((storeAcc, k) =>
-      storeAcc.add(k)(storeAdd(k)))
+    val storageAdd: Map[K, Seq[V]] = (storage match { case m: StorageMap[K, V] => m }).store
+    storageAdd.keySet.foldLeft(this: Storage[K, V])((storeAcc, k) =>
+      storeAcc.add(k)(storageAdd(k)))
   }
   override def filterV(condV: V => Boolean): Storage[K, V] =
     this.copy(store = store.map {

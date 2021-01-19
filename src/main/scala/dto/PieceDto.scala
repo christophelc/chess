@@ -12,12 +12,12 @@ object PieceDto {
     require("qkrnbp".contains(symbol))
     val position = encoded.substring(1).toSquare
     symbol match {
-      case 'q' => QueenBoardImpl(color = color, position = position)
-      case 'k' => KingBoardImpl(color = color, position = position)
-      case 'r' => RookBoardImpl(color = color, position = position)
-      case 'n' => KnightBoardImpl(color = color, position = position)
+      case 'q' => QueenBoard(color = color, position = position)
+      case 'k' => KingBoard(color = color, position = position)
+      case 'r' => RookBoard(color = color, position = position)
+      case 'n' => KnightBoard(color = color, position = position)
       case 'b' => BishopBoardImpl(color = color, position = position)
-      case 'p' => PawnBoardImpl(color = color, position = position)
+      case 'p' => PawnBoard(color = color, position = position)
     }
   }
 

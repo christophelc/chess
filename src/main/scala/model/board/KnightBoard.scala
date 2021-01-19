@@ -3,7 +3,7 @@ package model.board
 import model.Chessboard.MovesStorage
 import model.{ Bishop, Chessboard, Color, Direction, Knight, LogBook, Piece, Square }
 
-case class KnightBoardImpl(
+case class KnightBoard(
   override val color: Color,
   override val position: Square) extends PieceBoard(color, position) with Knight {
 

@@ -38,11 +38,11 @@ object CodecBitmap {
           val square = SquareXY(row = Row(i / 8), col = Col(i % 8))
           pieceId match {
             case Piece.idBishop => BishopBoardImpl(color, square)
-            case Piece.idKnight => KnightBoardImpl(color, square)
-            case Piece.idKing => KingBoardImpl(color, square)
-            case Piece.idQueen => QueenBoardImpl(color, square)
-            case Piece.idRook => RookBoardImpl(color, square)
-            case Piece.idPawn => PawnBoardImpl(color, square)
+            case Piece.idKnight => KnightBoard(color, square)
+            case Piece.idKing => KingBoard(color, square)
+            case Piece.idQueen => QueenBoard(color, square)
+            case Piece.idRook => RookBoard(color, square)
+            case Piece.idPawn => PawnBoard(color, square)
           }
         })
     }

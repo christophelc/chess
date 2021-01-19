@@ -57,18 +57,18 @@ class SimpleChessboardCodec extends Codec {
 
 class FENCodec {
   private def readLine(row: Row, line: String): Pieces = {
-    case class Acc(col: Col = colA, pieces: Pieces = ChessboardImpl.EmptyPieces)
+    case class Acc(col: Col = colA, pieces: Pieces = ChessboardImpl.emptyPieces)
     line.toCharArray.foldLeft(Acc())((acc, c) => {
       val square = SquareXY(row = row, col = acc.col)
       if (c.isLetter) {
         val color: Color = if (c.toLower == c) Black else White
         val piece: Piece = c.toLower match {
-          case 'p' => PawnBoardImpl(color, square)
-          case 'r' => RookBoardImpl(color, square)
+          case 'p' => PawnBoard(color, square)
+          case 'r' => RookBoard(color, square)
           case 'b' => BishopBoardImpl(color, square)
-          case 'n' => KnightBoardImpl(color, square)
-          case 'q' => QueenBoardImpl(color, square)
-          case 'k' => KingBoardImpl(color, square)
+          case 'n' => KnightBoard(color, square)
+          case 'q' => QueenBoard(color, square)
+          case 'k' => KingBoard(color, square)
         }
         acc.copy(col = acc.col.add(1), pieces = acc.pieces.add(piece))
       } else {
@@ -79,12 +79,12 @@ class FENCodec {
 
   private def pieceToString(piece: Piece): String = {
     piece match {
-      case QueenBoardImpl(_, _) => "Q"
-      case KingBoardImpl(_, _) => "K"
-      case RookBoardImpl(_, _) => "R"
+      case QueenBoard(_, _) => "Q"
+      case KingBoard(_, _) => "K"
+      case RookBoard(_, _) => "R"
       case BishopBoardImpl(_, _) => "B"
-      case KnightBoardImpl(_, _) => "N"
-      case PawnBoardImpl(_, _) => "P"
+      case KnightBoard(_, _) => "N"
+      case PawnBoard(_, _) => "P"
     }
   }
 

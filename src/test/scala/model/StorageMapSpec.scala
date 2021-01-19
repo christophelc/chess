@@ -1,15 +1,16 @@
 package model
 
 import model.Piece.PieceId
-import model.board.{ KingBoardImpl, RookBoardImpl, StorageImpl }
+import model.board.{ KingBoard, RookBoard }
 import model.board.RichSquare._
+import model.data.{ Storage, StorageMap }
 import org.specs2.mutable.Specification
 
-class StorageImplSpec extends Specification {
+class StorageMapSpec extends Specification {
 
   "Default storage" should {
     "be empty" in {
-      val storage: Storage[PieceId, Piece] = StorageImpl()
+      val storage: Storage[PieceId, Piece] = StorageMap()
       storage.nonEmpty should beFalse
       storage.isEmpty should beTrue
     }
@@ -17,9 +18,9 @@ class StorageImplSpec extends Specification {
 
   "A storage with pieces added" should {
     "not be empty" in {
-      val storage: Storage[PieceId, Piece] = StorageImpl()
-      val king = KingBoardImpl(White, "e1".toSquare)
-      val rook = RookBoardImpl(White, "h1".toSquare)
+      val storage: Storage[PieceId, Piece] = StorageMap()
+      val king = KingBoard(White, "e1".toSquare)
+      val rook = RookBoard(White, "h1".toSquare)
       val s = storage
         .add(king.id)(Seq(king))
         .add(rook.id)(Seq(rook))
@@ -30,11 +31,11 @@ class StorageImplSpec extends Specification {
 
   "A storage with several pieces added" should {
     "retrieve all the pieces added" in {
-      val storage: Storage[PieceId, Piece] = StorageImpl()
-      val whiteKing = KingBoardImpl(White, "e1".toSquare)
-      val whiteRook = RookBoardImpl(White, "h1".toSquare)
-      val blackKing = KingBoardImpl(Black, "e1".toSquare)
-      val blackRook = RookBoardImpl(Black, "h1".toSquare)
+      val storage: Storage[PieceId, Piece] = StorageMap()
+      val whiteKing = KingBoard(White, "e1".toSquare)
+      val whiteRook = RookBoard(White, "h1".toSquare)
+      val blackKing = KingBoard(Black, "e1".toSquare)
+      val blackRook = RookBoard(Black, "h1".toSquare)
       val s = storage
         .add(whiteKing.id)(Seq(whiteKing))
         .add(whiteRook.id)(Seq(whiteRook))
@@ -47,14 +48,14 @@ class StorageImplSpec extends Specification {
 
   "A fusion of 2 storages" should {
     "give a new storage with all the elements inside" in {
-      val storage: Storage[PieceId, Piece] = StorageImpl()
-      val whiteKing = KingBoardImpl(White, "e1".toSquare)
-      val whiteRook = RookBoardImpl(White, "h1".toSquare)
+      val storage: Storage[PieceId, Piece] = StorageMap()
+      val whiteKing = KingBoard(White, "e1".toSquare)
+      val whiteRook = RookBoard(White, "h1".toSquare)
       val s1 = storage
         .add(whiteKing.id)(Seq(whiteKing))
         .add(whiteRook.id)(Seq(whiteRook))
-      val blackKing = KingBoardImpl(Black, "e1".toSquare)
-      val blackRook = RookBoardImpl(Black, "h1".toSquare)
+      val blackKing = KingBoard(Black, "e1".toSquare)
+      val blackRook = RookBoard(Black, "h1".toSquare)
       val s2 = storage
         .add(blackKing.id)(Seq(blackKing))
         .add(blackRook.id)(Seq(blackRook))

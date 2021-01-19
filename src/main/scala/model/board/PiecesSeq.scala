@@ -3,7 +3,12 @@ package model.board
 import model.Chessboard.MovesStorage
 import model.Piece._
 import model._
-import model.board.StorageImpl.emptyMoveStorage
+import model.data.StorageMap.EmptyMoveStorage
+
+object PiecesSeq {
+  def build(pieces: Seq[Piece]): Pieces = PiecesSeq(pieces)
+  val EmptyPieces: Pieces = PiecesSeq(Nil)
+}
 
 case class PiecesSeq(pieces: Seq[Piece]) extends Pieces {
   override def toSeq: Seq[Piece] = pieces
@@ -41,7 +46,7 @@ case class PiecesSeq(pieces: Seq[Piece]) extends Pieces {
   override def sub(piecesToRemove: Seq[Piece]): Pieces = this.copy(pieces = pieces.diff(piecesToRemove))
   override def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesStorage =
     pieces.map(_.whereToGo(chessboard = chessboard)(logBook = logBook))
-      .foldLeft(emptyMoveStorage)((acc, movesWithControl) => acc.add(movesWithControl))
+      .foldLeft(EmptyMoveStorage)((acc, movesWithControl) => acc.add(movesWithControl))
 
   override def containsSameElementAs(piecesSeq: Pieces): Boolean = piecesSeq match {
     case PiecesSeq(piecesToCompare) => pieces.toSet == piecesToCompare.toSet

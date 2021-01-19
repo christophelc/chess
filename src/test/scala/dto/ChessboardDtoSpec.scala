@@ -3,7 +3,7 @@ package dto
 import org.specs2.mutable.Specification
 import model.{ board, _ }
 import model.board.RichSquare._
-import model.board.{ ChessboardImpl, KingBoardImpl }
+import model.board.{ ChessboardImpl, KingBoard }
 
 class ChessboardDtoSpec extends Specification {
 
@@ -13,9 +13,9 @@ class ChessboardDtoSpec extends Specification {
       val chessboardDto = ChessboardDto("KA1" + SimpleChessboardCodec.colorSeparator + "KA8")
       val chessboard = codec.decode(chessboardDto)
       val expectedChessboard =
-        ChessboardImpl(pieces = ChessboardImpl.EmptyPieces
-          .add(KingBoardImpl(White, "a1".toSquare))
-          .add(KingBoardImpl(Black, "a8".toSquare)))
+        ChessboardImpl(pieces = ChessboardImpl.emptyPieces
+          .add(KingBoard(White, "a1".toSquare))
+          .add(KingBoard(Black, "a8".toSquare)))
       chessboard must equalTo(expectedChessboard)
     }
   }

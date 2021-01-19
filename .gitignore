@@ -19,6 +19,7 @@ project/plugins/project/
 more.txt
 README.xml
 README.html
+notused/*
 
 # Idea
 .idea/

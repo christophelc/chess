@@ -87,7 +87,7 @@ case class Ep(
 }
 
 case class SmallCastling(
-  king: KingBoardImpl,
+  king: KingBoard,
   override val dest: Square,
   rookMove: BaseMove,
   override val tags: TagsMove = TagsMoveEmpty) extends BaseMove(king, dest) {
@@ -101,7 +101,7 @@ case class SmallCastling(
   override def show(tools: Tools, moves: MovesStorage): String = "o-o"
 }
 case class GreatCastling(
-  king: KingBoardImpl,
+  king: KingBoard,
   override val dest: Square,
   rookMove: BaseMove,
   override val tags: TagsMove = TagsMoveEmpty) extends BaseMove(king, dest) {

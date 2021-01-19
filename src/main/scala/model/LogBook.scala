@@ -59,7 +59,7 @@ case class LogBook(
     king.id == idKing &&
       (!smallCastlingForbiddenWhite && king.color == White ||
         !smallCastlingForbiddenBlack && king.color == Black) &&
-        KingBoardImpl.initialPosition(king.color) == king.position && // for position manually set
+        KingBoard.initialPosition(king.color) == king.position && // for position manually set
         !pieceHasMoved(king)
 
   def isGreatCastlingAvailable(king: Piece): Boolean =
@@ -67,7 +67,7 @@ case class LogBook(
       (!greatCastlingForbiddenWhite && king.color == White ||
         !greatCastlingForbiddenBlack && king.color == Black) &&
         !pieceHasMoved(king) &&
-        KingBoardImpl.initialPosition(king.color) == king.position
+        KingBoard.initialPosition(king.color) == king.position
 
   // FIXME: to be claimed by a player. or >= 75 moves
   def isNull50movesRule: Boolean =

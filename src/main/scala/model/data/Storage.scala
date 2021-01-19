@@ -1,23 +1,29 @@
-package model
+package model.data
 
+// TODO: extends Iterable[(K, V)]
 trait Storage[K, V] {
-  val store: Map[K, Seq[V]] = Map()
+  type Store
+  val store: Store
 
   /**
    * Erase all
+   *
    * @return an empty Storage object
    */
   def clear: Storage[K, V]
 
   /**
    * Erase the entry for the key p
+   *
    * @param k
    * @return
    */
   def del(k: K): Storage[K, V]
 
+  def get(k: K): Seq[V]
   /**
    * Replace if exist p -> m
+   *
    * @param k the key
    * @param v the sequence of values
    * @return the update storage object
@@ -27,6 +33,7 @@ trait Storage[K, V] {
   /**
    * Add the entry p with the values m. If there are already existing values,
    * we add them.
+   *
    * @param k key
    * @param v value
    * @return
@@ -37,6 +44,7 @@ trait Storage[K, V] {
 
   /**
    * Filter other all the values
+   *
    * @param condV
    * @return the new object
    */
@@ -44,6 +52,7 @@ trait Storage[K, V] {
 
   /**
    * Filter other all the keys
+   *
    * @param condK condition over key
    * @return the new object
    */
@@ -63,6 +72,7 @@ trait Storage[K, V] {
 
   /**
    * Sum the size of all the values
+   *
    * @return the sum
    */
   def countV: Int

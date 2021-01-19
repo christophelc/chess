@@ -3,9 +3,9 @@ package model.board
 import model.Chessboard.MovesStorage
 import model.{ Black, Chessboard, Color, Direction, GenericMove, LogBook, Pawn, Piece, Square }
 import model.board.MoveTag.isMove
-import model.board.StorageImpl.emptyMoveStorage
+import model.data.StorageMap.EmptyMoveStorage
 
-case class PawnBoardImpl(
+case class PawnBoard(
   override val color: Color,
   override val position: Square) extends PieceBoard(color, position) with Pawn {
 
@@ -15,12 +15,12 @@ case class PawnBoardImpl(
   private def promotion(chessboard: Chessboard)(move: GenericMove): Seq[Promotion] = Seq(
     Promotion(
       pawn = this,
-      newPiece = QueenBoardImpl(color = this.color, position = move.dest),
+      newPiece = QueenBoard(color = this.color, position = move.dest),
       takenPiece = chessboard.get(move.dest),
       tags = move.tags ++ isMove),
     Promotion(
       pawn = this,
-      newPiece = KnightBoardImpl(color = this.color, position = move.dest),
+      newPiece = KnightBoard(color = this.color, position = move.dest),
       takenPiece = chessboard.get(move.dest),
       tags = move.tags ++ isMove),
     Promotion(
@@ -30,7 +30,7 @@ case class PawnBoardImpl(
       tags = move.tags ++ isMove),
     Promotion(
       pawn = this,
-      newPiece = RookBoardImpl(color = this.color, position = move.dest),
+      newPiece = RookBoard(color = this.color, position = move.dest),
       takenPiece = chessboard.get(move.dest),
       tags = move.tags ++ isMove))
 
@@ -74,7 +74,7 @@ case class PawnBoardImpl(
         dest = position.shift(Direction(
           vertical = verticalDirection.vertical,
           horizontal = lastMovePawn2squares.piece.position.whichCol.minus(this.position.whichCol))),
-        takenPawn = PawnBoardImpl(lastMovePawn2squares.piece.color, lastMovePawn2squares.dest),
+        takenPawn = PawnBoard(lastMovePawn2squares.piece.color, lastMovePawn2squares.dest),
         tags = isMove))
     // cannot be a promotion
     val movesOnly = Seq(verticalMove2, ep).flatten
@@ -86,7 +86,7 @@ case class PawnBoardImpl(
         } else {
           Seq(move)
         })
-    emptyMoveStorage
+    EmptyMoveStorage
       .add(this)(movesOnly ++ moveOrPromotions)
   }
 }
