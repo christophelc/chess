@@ -28,7 +28,7 @@ case class StorageMap[K, V](override val store: Map[K, Seq[V]] = Map[K, Seq[V]](
     }.filter(_._2.nonEmpty))
 
   override def filterK(condK: K => Boolean): Storage[K, V] =
-    this.copy(store = store.filterKeys(condK))
+    this.copy(store = store.filterKeys(condK).toMap)
 
   override def findV(condV: V => Boolean): Option[V] = toSeq.find(condV)
 

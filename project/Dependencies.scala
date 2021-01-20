@@ -5,7 +5,7 @@ import sbt._
 
 object Dependencies {
 
-  val AkkaVersion = "2.6.10"
+  val AkkaVersion = "2.6.11"
   val akka = "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion
 
   val logger = Seq(
