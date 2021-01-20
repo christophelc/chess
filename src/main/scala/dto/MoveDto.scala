@@ -22,7 +22,7 @@ object MoveDto {
   }
 
   def readMultiline(moves: String): (Color, Seq[String]) = {
-    val movesDto: Seq[TwoMovesDto] = moves.split("\\n").map(move => MoveDto.read(move))
+    val movesDto: Seq[TwoMovesDto] = moves.split("\\n").toSeq.map(move => MoveDto.read(move))
     require(movesDto.nonEmpty)
     require(movesDto.head.black.isDefined)
     require(movesDto.tail.isEmpty || movesDto.last.white.isDefined)

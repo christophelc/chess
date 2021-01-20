@@ -1,8 +1,18 @@
 package model
 
 import model.Chessboard.MovesStorage
+import model.Piece.PieceId
+import model.data.Storage
+
+trait PiecesInit {
+  val EmptyPieces: Pieces
+  def build(pieces: Seq[Piece]): Pieces
+}
 
 trait Pieces {
+  type Store
+  val store: Storage[PieceId, Piece]
+
   def toSeq: Seq[Piece]
   def count: Int
   def union(pieces: Pieces): Pieces

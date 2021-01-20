@@ -1,5 +1,6 @@
 package model.data
 
+import model.data.PiecesData.{ K, V }
 import model.{ GenericMove, Piece }
 
 object StorageMap {
@@ -22,13 +23,19 @@ case class StorageMap[K, V](override val store: Map[K, Seq[V]] = Map[K, Seq[V]](
     storageAdd.keySet.foldLeft(this: Storage[K, V])((storeAcc, k) =>
       storeAcc.add(k)(storageAdd(k)))
   }
+
   override def filterV(condV: V => Boolean): Storage[K, V] =
     this.copy(store = store.map {
       case (k, v) => k -> v.filter(condV)
     }.filter(_._2.nonEmpty))
 
+  override def filterKandV(condK: K => Boolean)(condV: V => Boolean): Storage[K, V] =
+    this.copy(store = store.view.filterKeys(condK).toMap.map {
+      case (k, seqv) => k -> seqv.filter(condV)
+    }.filter(_._2.nonEmpty))
+
   override def filterK(condK: K => Boolean): Storage[K, V] =
-    this.copy(store = store.filterKeys(condK).toMap)
+    this.copy(store = store.view.filterKeys(condK).toMap)
 
   override def findV(condV: V => Boolean): Option[V] = toSeq.find(condV)
 

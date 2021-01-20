@@ -42,13 +42,18 @@ trait Storage[K, V] {
 
   def add(storage: Storage[K, V]): Storage[K, V]
 
+  def filterV(condV: V => Boolean): Storage[K, V]
+
+  // TOOD: filter KxV (K, V) => Boolean
+
   /**
    * Filter other all the values
    *
-   * @param condV
-   * @return the new object
+   * @param condK filter on keys
+   * @param condV filter on values
+   * @return the filtered Storage for the filter condK and condV
    */
-  def filterV(condV: V => Boolean): Storage[K, V]
+  def filterKandV(condK: K => Boolean)(condV: V => Boolean): Storage[K, V]
 
   /**
    * Filter other all the keys
