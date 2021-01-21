@@ -44,7 +44,7 @@ trait Storage[K, V] {
 
   def filterV(condV: V => Boolean): Storage[K, V]
 
-  // TOOD: filter KxV (K, V) => Boolean
+  def filterKxV(condKV: (K, V) => Boolean): Storage[K, V]
 
   /**
    * Filter other all the values

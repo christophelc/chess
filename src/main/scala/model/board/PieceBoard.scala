@@ -4,6 +4,7 @@ import model.Chessboard.MovesStorage
 import model._
 import model.data.StorageMap.EmptyMoveStorage
 
+// TODO: keep return type MovesStorage generic, do not use EmptyMoveStorage from StorageMap
 abstract class PieceBoard(
   override val color: Color,
   override val position: Square) extends Piece {

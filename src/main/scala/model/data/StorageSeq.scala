@@ -13,6 +13,8 @@ case class StorageSeq[K, V](partition: V => K, override val store: Seq[V] = Seq[
   override def add(k: K)(v: Seq[V]): Storage[K, V] = this.copy(store = store ++ v)
   override def add(storage: Storage[K, V]): Storage[K, V] = this.copy(store = store ++ storage.toSeq)
   override def filterV(condV: V => Boolean): Storage[K, V] = this.copy(store = store.filter(condV))
+  override def filterKxV(condKV: (K, V) => Boolean): Storage[K, V] =
+    this.copy(store = store.filter(v => condKV(partition(v), v)))
   override def filterKandV(condK: K => Boolean)(condV: V => Boolean): Storage[K, V] =
     this.copy(store = store.filter(p => condK(partition(p)) && condV(p)))
   override def filterK(condK: K => Boolean): Storage[K, V] =

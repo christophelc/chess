@@ -105,6 +105,15 @@ final case class PiecesData(override val store: StorePieceBoard = StorePieceBoar
 
   override def filterV(condV: V => Boolean): Storage[K, V] = filterKandV(_ => true)(condV)
 
+  override def filterKxV(condKV: (K, V) => Boolean): Storage[K, V] =
+    this.copy(store = store.copy(
+      rooks = store.rooks.filter(p => condKV(p.id, p)),
+      knights = store.knights.filter(p => condKV(p.id, p)),
+      bishops = store.bishops.filter(p => condKV(p.id, p)),
+      queens = store.queens.filter(p => condKV(p.id, p)),
+      kings = store.kings.filter(p => condKV(p.id, p)),
+      pawns = store.pawns.filter(p => condKV(p.id, p))))
+
   override def filterKandV(condK: K => Boolean)(condV: V => Boolean): Storage[K, V] = {
     this.copy(store = store.copy(
       rooks = store.rooks.filter(p => condK(p.id) && condV(p)),

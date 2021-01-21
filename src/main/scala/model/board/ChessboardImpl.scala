@@ -7,7 +7,7 @@ import config._
 import model.Square._
 import model._
 
-object ChessboardImpl extends ConfigurationChessboard3 {
+object ChessboardImpl extends ConfigurationChessboard2 {
 
   val pieces: Seq[Piece] =
     Seq(

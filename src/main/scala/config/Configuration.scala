@@ -1,6 +1,7 @@
 package config
 
 import model.Chessboard.MovesStorage
+import model.Piece.PieceId
 import model.{ ChessboardInit, GenericMove, Piece, Pieces }
 import model.data.{ PiecesInitStoragePieceBoard, PiecesInitStoragePieceMap, PiecesInitStoragePieceSeq, PiecesStorage, StorageMap, StorageSeq }
 
@@ -21,7 +22,7 @@ trait MoveForChessboardAsSeq extends MoveStorageForChessboard {
   override val emptyMove: MovesStorage = StorageSeq[Piece, GenericMove](partition = partition)
 }
 
-//////////////////////////////
+/////////////////////////////
 // Piece Storage
 
 trait ChessboardInitStoragePieceAsSeq extends ChessboardInit {

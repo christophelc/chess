@@ -36,6 +36,7 @@ trait PiecesInitStoragePieceMap extends PiecesInit {
 }
 
 case class PiecesStorage(store: Storage[PieceId, Piece]) extends Pieces {
+  override type Store = Storage[PieceId, Piece]
 
   override def toSeq: Seq[Piece] = store.toSeq
   override def count: Int = store.countV
@@ -53,8 +54,8 @@ case class PiecesStorage(store: Storage[PieceId, Piece]) extends Pieces {
   override def king(color: Color): Piece = store.filterK(_ == idKing).findV(_.color == color).head
   override def atSquare(square: Square): Option[Piece] = store.findV(_.position == square)
   override def add(piece: Piece): Pieces = this.copy(store = store.add(piece.id)(Seq(piece)))
-  // TODO: optimize filter (K, V) avoid iteration over all the pieces
-  override def sub(piece: Piece): Pieces = this.copy(store = store.filterV(_ != piece))
+  override def sub(piece: Piece): Pieces = this.copy(store =
+    store.filterK(_ != piece.id).add(store.filterKandV(_ == piece.id)(_ != piece)))
   override def sub(piecesToRemove: Seq[Piece]): Pieces = {
     piecesToRemove.foldLeft(this: Pieces)((acc: Pieces, pieceToRemove) => {
       acc.sub(pieceToRemove)

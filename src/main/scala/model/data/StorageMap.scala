@@ -29,6 +29,11 @@ case class StorageMap[K, V](override val store: Map[K, Seq[V]] = Map[K, Seq[V]](
       case (k, v) => k -> v.filter(condV)
     }.filter(_._2.nonEmpty))
 
+  override def filterKxV(condKV: (K, V) => Boolean): Storage[K, V] =
+    this.copy(store = store.view.map {
+      case (k, seqv) => k -> seqv.filter(v => condKV(k, v))
+    }.filter(_._2.nonEmpty).toMap)
+
   override def filterKandV(condK: K => Boolean)(condV: V => Boolean): Storage[K, V] =
     this.copy(store = store.view.filterKeys(condK).toMap.map {
       case (k, seqv) => k -> seqv.filter(condV)
