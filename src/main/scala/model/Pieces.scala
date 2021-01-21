@@ -6,7 +6,7 @@ import model.data.Storage
 
 trait PiecesInit {
   val EmptyPieces: Pieces
-  def build(pieces: Seq[Piece]): Pieces
+  def buildPieces(pieces: Seq[Piece]): Pieces
 }
 
 trait Pieces {

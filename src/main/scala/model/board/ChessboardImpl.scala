@@ -3,24 +3,11 @@ package model.board
 import com.typesafe.scalalogging.LazyLogging
 import model.Chessboard.{ EndGame, MovesStorage }
 import RichSquare.SquareXYFromString
+import config._
 import model.Square._
 import model._
-import model.data.{ PiecesStorage, StorageMap, StoragePieceSeq }
 
-trait MoveStorageForChessboard {
-  val emptyMove: MovesStorage
-}
-
-trait MoveForChessboardAsMap extends MoveStorageForChessboard {
-  override val emptyMove: MovesStorage = StorageMap.EmptyMoveStorage
-}
-
-trait ChessboardInitStoragePieceImpl extends ChessboardInit {
-  val emptyPieces: Pieces = PiecesStorage.EmptyPieces
-  def buildPieces(pieces: Seq[Piece]): Pieces = PiecesStorage.build(pieces)
-}
-
-object ChessboardImpl extends ChessboardInitStoragePieceImpl with MoveForChessboardAsMap {
+object ChessboardImpl extends ConfigurationChessboard3 {
 
   val pieces: Seq[Piece] =
     Seq(

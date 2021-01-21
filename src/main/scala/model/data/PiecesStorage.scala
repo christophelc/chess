@@ -9,7 +9,7 @@ import model.data.PiecesData.emptyPieceBoardStorage
 trait PiecesInitStoragePieceBoard extends PiecesInit {
   override val EmptyPieces: Pieces = PiecesStorage(emptyPieceBoardStorage)
 
-  override def build(pieces: Seq[Piece]): PiecesStorage = {
+  override def buildPieces(pieces: Seq[Piece]): PiecesStorage = {
     val groups = pieces.groupBy(_.id)
     PiecesStorage(PiecesData(StorePieceBoard(
       rooks = groups.getOrElse(idRook, Nil),
@@ -22,19 +22,18 @@ trait PiecesInitStoragePieceBoard extends PiecesInit {
 }
 
 trait PiecesInitStoragePieceSeq extends PiecesInit {
-  override val EmptyPieces: Pieces = PiecesStorage(StoragePieceSeq(store = Nil))
-  override def build(pieces: Seq[Piece]): PiecesStorage = PiecesStorage(StoragePieceSeq(pieces))
+  def partition(p: Piece): PieceId = p.id
+  val emptyPiecesStorage: Storage[PieceId, Piece] = StorageSeq(partition = partition)
+
+  override val EmptyPieces: Pieces = PiecesStorage(emptyPiecesStorage)
+  override def buildPieces(pieces: Seq[Piece]): PiecesStorage = PiecesStorage(StorageSeq(partition, pieces))
 }
 
 trait PiecesInitStoragePieceMap extends PiecesInit {
   override val EmptyPieces: Pieces = PiecesStorage(StorageMap(store = Map()))
-  override def build(pieces: Seq[Piece]): PiecesStorage = PiecesStorage(StorageMap(
+  override def buildPieces(pieces: Seq[Piece]): PiecesStorage = PiecesStorage(StorageMap(
     pieces.groupBy(_.id)))
 }
-
-//object PiecesStorage extends PiecesInitStoragePieceBoard
-object PiecesStorage extends PiecesInitStoragePieceSeq
-//object PiecesStorage extends PiecesInitStoragePieceMap
 
 case class PiecesStorage(store: Storage[PieceId, Piece]) extends Pieces {
 
