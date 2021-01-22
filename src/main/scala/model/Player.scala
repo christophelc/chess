@@ -2,7 +2,7 @@ package model
 
 import model.Chessboard._
 import model.analyze.Engine
-import model.board.{ BaseMove, ChessboardImpl }
+import model.board.{ BaseMove, ChessboardImplConfiguration$Piece }
 
 abstract class Player(val name: String) {
   def findMove(tools: Tools, color: Color): Option[GenericMove]

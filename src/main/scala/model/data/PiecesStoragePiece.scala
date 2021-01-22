@@ -1,17 +1,17 @@
 package model.data
 
+import config.ConfigurationChessboard.CurrentMoveStoragePiece
 import model.Chessboard.MovesStorage
 import model.Piece._
 import model._
-import model.data.StorageMap.EmptyMoveStorage
 import model.data.PiecesData.emptyPieceBoardStorage
 
 trait PiecesInitStoragePieceBoard extends PiecesInit {
-  override val EmptyPieces: Pieces = PiecesStorage(emptyPieceBoardStorage)
+  override val emptyPieces: Pieces = PiecesStoragePiece(emptyPieceBoardStorage)
 
-  override def buildPieces(pieces: Seq[Piece]): PiecesStorage = {
+  override def buildPieces(pieces: Seq[Piece]): PiecesStoragePiece = {
     val groups = pieces.groupBy(_.id)
-    PiecesStorage(PiecesData(StorePieceBoard(
+    PiecesStoragePiece(PiecesData(StorePieceBoard(
       rooks = groups.getOrElse(idRook, Nil),
       bishops = groups.getOrElse(idBishop, Nil),
       knights = groups.getOrElse(idKnight, Nil),
@@ -25,24 +25,24 @@ trait PiecesInitStoragePieceSeq extends PiecesInit {
   def partition(p: Piece): PieceId = p.id
   val emptyPiecesStorage: Storage[PieceId, Piece] = StorageSeq(partition = partition)
 
-  override val EmptyPieces: Pieces = PiecesStorage(emptyPiecesStorage)
-  override def buildPieces(pieces: Seq[Piece]): PiecesStorage = PiecesStorage(StorageSeq(partition, pieces))
+  override val emptyPieces: Pieces = PiecesStoragePiece(emptyPiecesStorage)
+  override def buildPieces(pieces: Seq[Piece]): PiecesStoragePiece = PiecesStoragePiece(StorageSeq(partition, pieces))
 }
 
 trait PiecesInitStoragePieceMap extends PiecesInit {
-  override val EmptyPieces: Pieces = PiecesStorage(StorageMap(store = Map()))
-  override def buildPieces(pieces: Seq[Piece]): PiecesStorage = PiecesStorage(StorageMap(
+  override val emptyPieces: Pieces = PiecesStoragePiece(StorageMap(store = Map()))
+  override def buildPieces(pieces: Seq[Piece]): PiecesStoragePiece = PiecesStoragePiece(StorageMap(
     pieces.groupBy(_.id)))
 }
 
-case class PiecesStorage(store: Storage[PieceId, Piece]) extends Pieces {
+case class PiecesStoragePiece(store: Storage[PieceId, Piece]) extends Pieces with CurrentMoveStoragePiece {
   override type Store = Storage[PieceId, Piece]
 
   override def toSeq: Seq[Piece] = store.toSeq
   override def count: Int = store.countV
   override def union(piecesSeq: Pieces): Pieces =
     piecesSeq match {
-      case piecesAdd: PiecesStorage => this.copy(store = piecesAdd.store.add(store))
+      case piecesAdd: PiecesStoragePiece => this.copy(store = piecesAdd.store.add(store))
     }
   override def withColor(color: Color): Pieces = this.copy(store.filterV(_.color == color))
   override def isEmpty: Boolean = store.isEmpty
@@ -61,11 +61,16 @@ case class PiecesStorage(store: Storage[PieceId, Piece]) extends Pieces {
       acc.sub(pieceToRemove)
     })
   }
-  override def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesStorage =
-    toSeq.map(_.whereToGo(chessboard = chessboard)(logBook = logBook))
-      .foldLeft(EmptyMoveStorage)((acc, movesWithControl) => acc.add(movesWithControl))
+  override def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesStorage = {
+    // retrieve the MoveStorage used by pieces and clear to be sure to use the same type
+    // FIXME: not totally satisfying. We should be sure that MoveStorage is the same for
+    // Chessboard, Pieces and each subtype of Piece
+    val pieces = toSeq
+    pieces.map(_.whereToGo(chessboard = chessboard)(logBook = logBook))
+      .foldLeft(pieces.head.emptyMove)((acc, movesWithControl) => acc.add(movesWithControl))
+  }
 
   override def containsSameElementAs(piecesSeq: Pieces): Boolean = piecesSeq match {
-    case piecesCompare: PiecesStorage => toSeq.toSet == piecesCompare.toSeq.toSet
+    case piecesCompare: PiecesStoragePiece => toSeq.toSet == piecesCompare.toSeq.toSet
   }
 }

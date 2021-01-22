@@ -1,7 +1,7 @@
 package model.analyze
 
 import actor.StatActor.UpdateStat
-import model.board.ChessboardImpl
+import model.board.ChessboardImplConfiguration$Piece
 import model.data.Tree._
 import model.data._
 import model.{ Color, GenericMove, Tools }

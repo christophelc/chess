@@ -27,6 +27,7 @@ trait Piece {
   def color: Color
   def position: Square
 
+  def emptyMove: MovesStorage
   def shift(direction: Direction): Square = position.shift(direction)
   def letsMove(dest: Square): Piece
   def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesStorage

@@ -9,7 +9,7 @@ trait ChessboardInit {
   def buildPieces(pieces: Seq[Piece]): Pieces
   val emptyChessboard: Chessboard
   val emptyPieces: Pieces
-  val emptyMove: MovesStorage
+  def emptyMove: MovesStorage
   val initialState: Pieces
 }
 
@@ -69,6 +69,7 @@ trait Chessboard {
 }
 
 object Chessboard {
+  // TODO: make it more generic Storage[K, V]
   type MovesStorage = Storage[Piece, GenericMove]
   trait EndGame
   case object EndGame50MoveNoTakenPieceNoPawnMove extends EndGame

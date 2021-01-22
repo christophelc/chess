@@ -5,7 +5,6 @@ import model.Piece.{ idKing, idPawn }
 import org.specs2.mutable.Specification
 import model.board.RichSquare._
 import model.board._
-import model.data.StorageMap.EmptyMoveStorage
 
 class ChessboardSpec extends Specification {
 
@@ -19,7 +18,7 @@ class ChessboardSpec extends Specification {
     "be at g1 and its rook at f1" in {
       val king = KingBoard(White, "e1".toSquare)
       val rook = RookBoard(White, "h1".toSquare)
-      val chessboard = ChessboardImpl.emptyChessboard + king + rook
+      val chessboard = ChessboardImplConfiguration$Piece.emptyChessboard + king + rook
       chessboard.isCastleAvailableNow(logBook, White) should beTrue
       val move = generateMoveWithControl(Tools(chessboard, logBook), White)
         .filterK(_.id == idKing)
@@ -28,7 +27,7 @@ class ChessboardSpec extends Specification {
       val newChessboard = chessboard.play(move.get)
       val newLogBook = logBook.add(move.get)
       val kingMoved = board.KingBoard(White, "g1".toSquare)
-      newChessboard shouldEqual ChessboardImpl.emptyChessboard + kingMoved + board.RookBoard(White, "f1".toSquare)
+      newChessboard shouldEqual ChessboardImplConfiguration$Piece.emptyChessboard + kingMoved + board.RookBoard(White, "f1".toSquare)
       newChessboard.isCastleAvailableNow(newLogBook, White) should beFalse
     }
   }
@@ -37,7 +36,7 @@ class ChessboardSpec extends Specification {
     "not be able to castle" in {
       val king = board.KingBoard(White, "e1".toSquare)
       val rook = board.RookBoard(White, "h1".toSquare)
-      val chessboard = ChessboardImpl.emptyChessboard + king + rook
+      val chessboard = ChessboardImplConfiguration$Piece.emptyChessboard + king + rook
       chessboard.isCastleAvailableNow(logBook, White) should beTrue
       val move = generateMoveWithControl(Tools(chessboard, logBook), White)
         .filterK(_.id == idKing)
@@ -53,7 +52,7 @@ class ChessboardSpec extends Specification {
   "A promoting white pawn into a Rook in c8" should {
     "promote to a rook in c8" in {
       val pawn = PawnBoard(White, "c7".toSquare)
-      val chessboard = ChessboardImpl.emptyChessboard + pawn
+      val chessboard = ChessboardImplConfiguration$Piece.emptyChessboard + pawn
       val promoted = board.RookBoard(White, "c8".toSquare)
       val move = generateMoveWithControl(Tools(chessboard, logBook), White)
         .findV {
@@ -63,14 +62,14 @@ class ChessboardSpec extends Specification {
           }
         }
       move.isDefined should beTrue
-      chessboard.play(move.get) shouldEqual ChessboardImpl.emptyChessboard + promoted
+      chessboard.play(move.get) shouldEqual ChessboardImplConfiguration$Piece.emptyChessboard + promoted
     }
   }
 
   "A promoting white pawn into a Knight in c8" should {
     "promote to a Knight in c8" in {
       val pawn = board.PawnBoard(White, "c7".toSquare)
-      val chessboard = ChessboardImpl.emptyChessboard + pawn
+      val chessboard = ChessboardImplConfiguration$Piece.emptyChessboard + pawn
       val promoted = KnightBoard(White, "c8".toSquare)
       val move = generateMoveWithControl(Tools(chessboard, logBook), White)
         .findV {
@@ -80,15 +79,15 @@ class ChessboardSpec extends Specification {
           }
         }
       move.isDefined should beTrue
-      chessboard.play(move.get) shouldEqual ChessboardImpl.emptyChessboard + promoted
+      chessboard.play(move.get) shouldEqual ChessboardImplConfiguration$Piece.emptyChessboard + promoted
     }
   }
 
   "A promoting white pawn into a Bishop in c8" should {
     "promote to a Bishop in c8" in {
       val pawn = board.PawnBoard(White, "c7".toSquare)
-      val chessboard = ChessboardImpl.emptyChessboard + pawn
-      val promoted = BishopBoardImpl(White, "c8".toSquare)
+      val chessboard = ChessboardImplConfiguration$Piece.emptyChessboard + pawn
+      val promoted = BishopBoard(White, "c8".toSquare)
       val move = generateMoveWithControl(Tools(chessboard, logBook), White)
         .findV {
           case Promotion(_, newPiece, _, _) => newPiece match {
@@ -97,7 +96,7 @@ class ChessboardSpec extends Specification {
           }
         }
       move.isDefined should beTrue
-      chessboard.play(move.get) shouldEqual ChessboardImpl.emptyChessboard + promoted
+      chessboard.play(move.get) shouldEqual ChessboardImplConfiguration$Piece.emptyChessboard + promoted
     }
   }
 
@@ -107,7 +106,7 @@ class ChessboardSpec extends Specification {
       val blackKing = board.KingBoard(Black, "a1".toSquare)
       val pawn = board.PawnBoard(White, "c7".toSquare)
       val tools = Tools(
-        chessboard = ChessboardImpl.emptyChessboard + pawn + whiteKing + blackKing,
+        chessboard = ChessboardImplConfiguration$Piece.emptyChessboard + pawn + whiteKing + blackKing,
         logBook = logBook)
       val promoted = QueenBoard(White, "c8".toSquare)
       val moves: MovesStorage = generateMoveWithControl(tools, White)
@@ -120,8 +119,8 @@ class ChessboardSpec extends Specification {
           }
         }
       move.isDefined should beTrue
-      tools.chessboard.play(move.get) shouldEqual ChessboardImpl.emptyChessboard + promoted + whiteKing + blackKing
-      move.get.show(tools, EmptyMoveStorage.add(moves)) shouldEqual ("c8=Q")
+      tools.chessboard.play(move.get) shouldEqual ChessboardImplConfiguration$Piece.emptyChessboard + promoted + whiteKing + blackKing
+      move.get.show(tools, moves) shouldEqual ("c8=Q")
     }
 
     "promote to a Queen in cxb8 by taking a black piece in b8" in {
@@ -130,7 +129,7 @@ class ChessboardSpec extends Specification {
       val pawn = board.PawnBoard(White, "c7".toSquare)
       val rook = board.RookBoard(Black, "b8".toSquare)
       val tools = Tools(
-        chessboard = ChessboardImpl.emptyChessboard + pawn + rook + whiteKing + blackKing,
+        chessboard = ChessboardImplConfiguration$Piece.emptyChessboard + pawn + rook + whiteKing + blackKing,
         logBook = logBook)
       val promoted = board.QueenBoard(White, "b8".toSquare)
       val moves = generateMoveWithControl(tools, White)
@@ -145,7 +144,7 @@ class ChessboardSpec extends Specification {
           case _ => false
         }
       move.isDefined should beTrue
-      tools.chessboard.play(move.get) shouldEqual ChessboardImpl.emptyChessboard + promoted + whiteKing + blackKing
+      tools.chessboard.play(move.get) shouldEqual ChessboardImplConfiguration$Piece.emptyChessboard + promoted + whiteKing + blackKing
       move.get.show(tools, moves) shouldEqual ("cxb8=Q")
     }
   }
@@ -157,7 +156,7 @@ class ChessboardSpec extends Specification {
       val expectedEp = board.PawnBoard(Black, "c3".toSquare)
       val king = board.KingBoard(White, "a8".toSquare)
       val tools = Tools(
-        chessboard = ChessboardImpl.emptyChessboard + pawnEp + takingPawn + king,
+        chessboard = ChessboardImplConfiguration$Piece.emptyChessboard + pawnEp + takingPawn + king,
         logBook = logBook)
       val move: Option[GenericMove] = generateMoveWithControl(tools, White)
         .findV(_.dest == "c4".toSquare)
@@ -169,7 +168,7 @@ class ChessboardSpec extends Specification {
         .findV(_.dest == "c3".toSquare)
       moveEp.isDefined should beTrue
       moveEp.get.show(newTools, moves) shouldEqual ("bxc3")
-      newChessboard.play(moveEp.get) shouldEqual ChessboardImpl.emptyChessboard + expectedEp + king
+      newChessboard.play(moveEp.get) shouldEqual ChessboardImplConfiguration$Piece.emptyChessboard + expectedEp + king
     }
 
   }

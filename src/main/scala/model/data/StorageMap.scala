@@ -1,6 +1,5 @@
 package model.data
 
-import model.data.PiecesData.{ K, V }
 import model.{ GenericMove, Piece }
 
 object StorageMap {

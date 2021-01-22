@@ -41,23 +41,23 @@ class SimpleChessboardCodec extends Codec {
     val piecesBlackDto = piecesPerColor(1)
     require(piecesWhiteDto.length % 3 == 0)
     require(piecesBlackDto.length % 3 == 0)
-    val piecesWhite = ChessboardImpl.buildPieces(
+    val piecesWhite = ChessboardImplConfiguration$Piece.buildPieces(
       piecesWhiteDto
         .toSeq
         .grouped(3)
         .map(pieceDto => PieceDto.toPiece(White, pieceDto.toString())).toSeq)
-    val piecesBlack = ChessboardImpl.buildPieces(
+    val piecesBlack = ChessboardImplConfiguration$Piece.buildPieces(
       piecesBlackDto
         .toSeq
         .grouped(3)
         .map(pieceDto => PieceDto.toPiece(Black, pieceDto.toString())).toSeq)
-    ChessboardImpl(piecesWhite.union(piecesBlack))
+    ChessboardImplConfiguration$Piece(piecesWhite.union(piecesBlack))
   }
 }
 
 class FENCodec {
   private def readLine(row: Row, line: String): Pieces = {
-    case class Acc(col: Col = colA, pieces: Pieces = ChessboardImpl.emptyPieces)
+    case class Acc(col: Col = colA, pieces: Pieces = ChessboardImplConfiguration$Piece.emptyPieces)
     line.toCharArray.foldLeft(Acc())((acc, c) => {
       val square = SquareXY(row = row, col = acc.col)
       if (c.isLetter) {
@@ -65,7 +65,7 @@ class FENCodec {
         val piece: Piece = c.toLower match {
           case 'p' => PawnBoard(color, square)
           case 'r' => RookBoard(color, square)
-          case 'b' => BishopBoardImpl(color, square)
+          case 'b' => BishopBoard(color, square)
           case 'n' => KnightBoard(color, square)
           case 'q' => QueenBoard(color, square)
           case 'k' => KingBoard(color, square)
@@ -82,7 +82,7 @@ class FENCodec {
       case QueenBoard(_, _) => "Q"
       case KingBoard(_, _) => "K"
       case RookBoard(_, _) => "R"
-      case BishopBoardImpl(_, _) => "B"
+      case BishopBoard(_, _) => "B"
       case KnightBoard(_, _) => "N"
       case PawnBoard(_, _) => "P"
     }
@@ -158,8 +158,8 @@ class FENCodec {
       playerWhite = PlayerReal("White"),
       whichPlayerTurn = if (whichPlayer == "w") White else Black,
       tools = Tools(
-        chessboard = board.ChessboardImpl(
-          pieces = ChessboardImpl.buildPieces(pieces)),
+        chessboard = board.ChessboardImplConfiguration$Piece(
+          pieces = ChessboardImplConfiguration$Piece.buildPieces(pieces)),
         logBook = LogBook(
           smallCastlingForbiddenWhite = !castle.contains("K"),
           greatCastlingForbiddenWhite = !castle.contains("Q"),

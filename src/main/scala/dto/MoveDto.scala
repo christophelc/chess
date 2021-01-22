@@ -1,7 +1,7 @@
 package dto
 
 import model.board.RichSquare.SquareXYFromString
-import model.board.ChessboardImpl
+import model.board.ChessboardImplConfiguration$Piece
 import model.{ Black, Color, GenericMove, LogBook, Tools, White }
 
 import scala.util.Try

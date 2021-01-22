@@ -3,43 +3,52 @@ package config
 import model.Chessboard.MovesStorage
 import model.Piece.PieceId
 import model.{ ChessboardInit, GenericMove, Piece, Pieces }
-import model.data.{ PiecesInitStoragePieceBoard, PiecesInitStoragePieceMap, PiecesInitStoragePieceSeq, PiecesStorage, StorageMap, StorageSeq }
+import model.data.{ PiecesInitStoragePieceBoard, PiecesInitStoragePieceMap, PiecesInitStoragePieceSeq, PiecesStoragePiece, StorageMap, StorageSeq }
 
 trait Configuration
 
 //////////////////////////////
 // Move Storage
-trait MoveStorageForChessboard {
-  val emptyMove: MovesStorage
+trait ConfigurationMoveStorage {
+  def emptyMove: MovesStorage
 }
 
-trait MoveForChessboardAsMap extends MoveStorageForChessboard {
-  override val emptyMove: MovesStorage = StorageMap.EmptyMoveStorage
+trait ConfigurationMoveStorageAsMap extends ConfigurationMoveStorage {
+  override def emptyMove: MovesStorage = StorageMap.EmptyMoveStorage
 }
 
-trait MoveForChessboardAsSeq extends MoveStorageForChessboard {
-  def partition(move: GenericMove): Piece = move.piece
-  override val emptyMove: MovesStorage = StorageSeq[Piece, GenericMove](partition = partition)
+trait ConfigurationMoveStorageAsSeqPiece extends ConfigurationMoveStorage {
+  override def emptyMove: MovesStorage = StorageSeq[Piece, GenericMove](partition = (move: GenericMove) => move.piece)
 }
+
+// TODO: Chessboard.MovesStorage is not yet generic
+//trait ConfigurationMoveStorageAsSeqPieceId extends ConfigurationMoveStorage {
+//  override def emptyMove: MovesStorage = StorageSeq[PieceId, GenericMove](partition = (move: GenericMove) => move.piece.id)
+//}
 
 /////////////////////////////
-// Piece Storage
+// Piece: Move Storage
+
+trait PieceMoveStorageAsMap extends ConfigurationMoveStorageAsMap
+
+/////////////////////////////
+// Chessboard: Piece Storage
 
 trait ChessboardInitStoragePieceAsSeq extends ChessboardInit {
   object PiecesStorage extends PiecesInitStoragePieceSeq
-  val emptyPieces: Pieces = PiecesStorage.EmptyPieces
+  final val emptyPieces: Pieces = PiecesStorage.emptyPieces
   def buildPieces(pieces: Seq[Piece]): Pieces = PiecesStorage.buildPieces(pieces)
 }
 
 trait ChessboardInitStoragePieceAsMap extends ChessboardInit {
   object PiecesStorage extends PiecesInitStoragePieceMap
-  val emptyPieces: Pieces = PiecesStorage.EmptyPieces
+  final val emptyPieces: Pieces = PiecesStorage.emptyPieces
   def buildPieces(pieces: Seq[Piece]): Pieces = PiecesStorage.buildPieces(pieces)
 }
 
 trait ChessboardInitStoragePieceAsBoard extends ChessboardInit {
   object PiecesStorage extends PiecesInitStoragePieceBoard
-  val emptyPieces: Pieces = PiecesStorage.EmptyPieces
+  final val emptyPieces: Pieces = PiecesStorage.emptyPieces
   def buildPieces(pieces: Seq[Piece]): Pieces = PiecesStorage.buildPieces(pieces)
 }
 

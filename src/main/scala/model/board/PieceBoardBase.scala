@@ -1,18 +1,15 @@
 package model.board
 
+import config.ConfigurationChessboard.CurrentMoveStoragePiece
 import model.Chessboard.MovesStorage
 import model._
-import model.data.StorageMap.EmptyMoveStorage
 
-// TODO: keep return type MovesStorage generic, do not use EmptyMoveStorage from StorageMap
-abstract class PieceBoard(
-  override val color: Color,
-  override val position: Square) extends Piece {
+trait PieceBoardBase extends Piece with CurrentMoveStoragePiece {
 
   def checkMoveEmptySquare(chessboard: Chessboard)(move: GenericMove): Option[GenericMove] =
     Option(move).filter(_ => chessboard.get(move.dest).isEmpty)
 
-  def checkMoveInsideChessboard(chessboard: Chessboard)(move: GenericMove): Option[GenericMove] = {
+  def checkMoveInsideChessboard(move: GenericMove): Option[GenericMove] = {
     Option(move).filter(_ => move.dest.isInsideChessboard)
   }
 
@@ -26,20 +23,20 @@ abstract class PieceBoard(
   def moveUnitGenWithControl(chessboard: Chessboard)(directions: Seq[Direction]): MovesStorage = {
     def _moveUnitGenWithControl(chessboard: Chessboard)(direction: Direction): MovesStorage = {
       moveUnitWithoutControl(chessboard)(direction) match {
-        case None => EmptyMoveStorage
+        case None => emptyMove
         case Some(move) =>
           chessboard.get(move.dest) match {
-            case None => EmptyMoveStorage.add(move.piece)(
+            case None => emptyMove.add(move.piece)(
               Seq(move
                 .enableTag(TagIsMove)
                 .enableTag(TagIsControl)))
             case Some(pieceDest) =>
-              EmptyMoveStorage.add(move.piece)(
+              emptyMove.add(move.piece)(
                 Seq(addControlAndMoveIfTaking(move, pieceDest)))
           }
       }
     }
-    directions.foldLeft(EmptyMoveStorage)((movesWithControls, direction) =>
+    directions.foldLeft(emptyMove)((movesWithControls, direction) =>
       movesWithControls.add(_moveUnitGenWithControl(chessboard)(direction)))
   }
 
@@ -56,14 +53,14 @@ abstract class PieceBoard(
       dest = dest,
       takenPiece = chessboard.get(dest),
       MoveTag.isMove)
-    checkMoveInsideChessboard(chessboard)(move)
+    checkMoveInsideChessboard(move)
   }
 
   def moveMulGenWithControl(chessboard: Chessboard)(directions: Seq[Direction]): MovesStorage = {
     def moveMulWithControl(chessboard: Chessboard)(directionUnit: Direction): MovesStorage = {
       def _moveMul(chessboard: Chessboard)(direction: Direction): MovesStorage = {
         moveUnitWithoutControl(chessboard)(direction) match {
-          case None => EmptyMoveStorage
+          case None => emptyMove
           case Some(move) =>
             chessboard.get(move.dest) match {
               case None =>
@@ -72,7 +69,7 @@ abstract class PieceBoard(
                     .enableTag(TagIsMove)
                     .enableTag(TagIsControl)))
               case Some(pieceDest) =>
-                EmptyMoveStorage.add(move.piece)(
+                emptyMove.add(move.piece)(
                   Seq(addControlAndMoveIfTaking(move, pieceDest)))
             }
         }
@@ -81,7 +78,7 @@ abstract class PieceBoard(
       _moveMul(chessboard)(directionUnit)
     }
 
-    directions.foldLeft(EmptyMoveStorage)((movesWithControls, direction) =>
+    directions.foldLeft(emptyMove)((movesWithControls, direction) =>
       movesWithControls.add(moveMulWithControl(chessboard)(direction)))
   }
 }

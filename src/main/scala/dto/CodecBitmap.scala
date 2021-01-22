@@ -37,7 +37,7 @@ object CodecBitmap {
         squares.map(i => {
           val square = SquareXY(row = Row(i / 8), col = Col(i % 8))
           pieceId match {
-            case Piece.idBishop => BishopBoardImpl(color, square)
+            case Piece.idBishop => BishopBoard(color, square)
             case Piece.idKnight => KnightBoard(color, square)
             case Piece.idKing => KingBoard(color, square)
             case Piece.idQueen => QueenBoard(color, square)
@@ -46,7 +46,7 @@ object CodecBitmap {
           }
         })
     }
-    ChessboardImpl(ChessboardImpl.buildPieces(pieces))
+    ChessboardImplConfiguration$Piece(ChessboardImplConfiguration$Piece.buildPieces(pieces))
   }
 }
 

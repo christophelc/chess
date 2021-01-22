@@ -17,9 +17,9 @@ class ScoreSpec extends Specification {
       val logBook = LogBook()
       val kingWhite = KingBoard(White, "e1".toSquare)
       val rookWhite = RookBoard(White, "h1".toSquare)
-      val bishopBlack = BishopBoardImpl(Black, "a8".toSquare)
+      val bishopBlack = BishopBoard(Black, "a8".toSquare)
       val kingBlack = KingBoard(Black, "e8".toSquare)
-      val chessboard = ChessboardImpl.emptyChessboard + kingWhite + kingBlack + rookWhite + bishopBlack
+      val chessboard = ChessboardImplConfiguration$Piece.emptyChessboard + kingWhite + kingBlack + rookWhite + bishopBlack
       val tools = Tools(chessboard, logBook)
       val score = Score.evaluate(White, tools)
       score shouldEqual 200
@@ -29,7 +29,7 @@ class ScoreSpec extends Specification {
   "Scoring" should {
     "make the difference between Black and White position after first move" in {
       val logBook = LogBook()
-      val chessboard = ChessboardImpl()
+      val chessboard = ChessboardImplConfiguration$Piece()
       val tools = Tools(chessboard, logBook)
       val moveNC3 = generateMoveWithControl(Tools(chessboard, logBook), White)
         .filterK(p => p.id == idKnight && p.position.whichCol == Square.colB)

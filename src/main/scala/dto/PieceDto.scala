@@ -16,7 +16,7 @@ object PieceDto {
       case 'k' => KingBoard(color = color, position = position)
       case 'r' => RookBoard(color = color, position = position)
       case 'n' => KnightBoard(color = color, position = position)
-      case 'b' => BishopBoardImpl(color = color, position = position)
+      case 'b' => BishopBoard(color = color, position = position)
       case 'p' => PawnBoard(color = color, position = position)
     }
   }

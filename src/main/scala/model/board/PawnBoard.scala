@@ -1,13 +1,13 @@
 package model.board
 
+import config.ConfigurationChessboard.ConfigurationCurrentPieceBoardPiece
 import model.Chessboard.MovesStorage
-import model.{ Black, Chessboard, Color, Direction, GenericMove, LogBook, Pawn, Piece, Square }
+import model._
 import model.board.MoveTag.isMove
-import model.data.StorageMap.EmptyMoveStorage
 
 case class PawnBoard(
   override val color: Color,
-  override val position: Square) extends PieceBoard(color, position) with Pawn {
+  override val position: Square) extends ConfigurationCurrentPieceBoardPiece with Pawn {
 
   override def letsMove(dest: Square): Piece = this.copy(position = dest)
   override def display: String = if (color == Black) "♙" else "♟"
@@ -25,7 +25,7 @@ case class PawnBoard(
       tags = move.tags ++ isMove),
     Promotion(
       pawn = this,
-      newPiece = BishopBoardImpl(color = this.color, position = move.dest),
+      newPiece = BishopBoard(color = this.color, position = move.dest),
       takenPiece = chessboard.get(move.dest),
       tags = move.tags ++ isMove),
     Promotion(
@@ -86,7 +86,7 @@ case class PawnBoard(
         } else {
           Seq(move)
         })
-    EmptyMoveStorage
+    emptyMove
       .add(this)(movesOnly ++ moveOrPromotions)
   }
 }

@@ -1,8 +1,9 @@
 package model.board
 
 import RichSquare.SquareXYFromString
+import config.ConfigurationChessboard.ConfigurationCurrentPieceBoardPiece
 import model.Chessboard.MovesStorage
-import model.{ Black, Chessboard, Color, Direction, GenericMove, King, LogBook, Piece, Square, White }
+import model._
 
 object KingBoard {
   final val e1 = "e1".toSquare
@@ -15,7 +16,7 @@ object KingBoard {
 
 case class KingBoard(
   override val color: Color,
-  override val position: Square) extends PieceBoard(color, position) with King {
+  override val position: Square) extends ConfigurationCurrentPieceBoardPiece with King {
 
   override def letsMove(dest: Square): Piece = this.copy(position = dest)
   override def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesStorage = {
