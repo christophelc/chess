@@ -1,12 +1,18 @@
 package model.analyze
 
-import model.Chessboard.MovesStorage
-import model.Piece.pawnInitialRow
+import config.ConfigurationChessboard.MovesStorage
+import model.Piece.{ PieceId, idBishop, idKnight, idQueen, idRook, pawnInitialRow }
 import model.{ Chessboard, _ }
 import model.analyze.Strategy._
 import model.board._
 
-object Score {
+trait Selector[K] {
+  def selector(controls: MovesStorage)(id: PieceId, color: Color): MovesStorage
+  def selectorMultiple(controls: MovesStorage)(id: Seq[PieceId], color: Color): MovesStorage
+  def selectorWithFilter(controls: MovesStorage)(filter: (PieceId, Color) => Boolean): MovesStorage
+}
+
+abstract class ScoreGen[K] extends Selector[K] {
 
   def value(piece: Piece): Int = {
     piece match {
@@ -23,23 +29,16 @@ object Score {
 
   def scoreCapture(chessboard: Chessboard, move: GenericMove): Int = {
     if (chessboard.isAttackedByColor(move.dest, move.piece.color.invert)) {
-      move.takenPiece.map(_ => Score.value(move.piece)).getOrElse(0)
+      move.takenPiece.map(_ => value(move.piece)).getOrElse(0)
     } else
       0
   }
-  def value(color: Color, pieces: Pieces): Int = {
-    val piecePerColor = pieces.toSeq.groupBy(_.color)
-    piecePerColor(color).map(value).sum - piecePerColor(color.invert).map(value).sum
-  }
+  def valuePiece(color: Color, pieces: Pieces): Int =
+    pieces.toSeq.map(piece => if (piece.color == color) value(piece) else -value(piece)).sum
 
   // opening
-  def developmentBishopKnight(color: Color, controls: MovesStorage): Int = {
-    controls.filterK {
-      case piece: Knight => piece.color == color
-      case piece: Bishop => piece.color == color
-      case _ => false
-    }.countV * 10
-  }
+  def developmentBishopKnight(color: Color, controls: MovesStorage): Int =
+    selectorMultiple(controls)(Seq(idKnight, idBishop), color).countV * 10
 
   def developmentRook(color: Color, chessboard: Chessboard): Int = {
     val rooks = chessboard.pieces.rooks
@@ -75,19 +74,11 @@ object Score {
       developmentRook(color, tools.chessboard)
   }
 
-  def queenActivate(color: Color, controls: MovesStorage): Int = {
-    controls.filterK {
-      case queen: Queen if (queen.color == color) => true
-      case _ => false
-    }.countV * 5
-  }
+  def queenActivate(color: Color, controls: MovesStorage): Int =
+    selector(controls)(idQueen, color).countV * 5
 
-  def rookActivate(color: Color, controls: MovesStorage): Int = {
-    controls.filterK {
-      case rook: Rook if (rook.color == color) => true
-      case _ => false
-    }.countV * 5
-  }
+  def rookActivate(color: Color, controls: MovesStorage): Int =
+    selector(controls)(idRook, color).countV * 5
 
   def evaluateOpening(target: Target, color: Color, tools: Tools): Int = {
     target match {
@@ -121,8 +112,25 @@ object Score {
   }
 
   def evaluate(color: Color, tools: Tools): Int = {
-    val initialScore = value(color, tools.chessboard.pieces)
+    val initialScore = valuePiece(color, tools.chessboard.pieces)
     Strategy.targets(tools).foldLeft(initialScore)((score, target) =>
       evaluateTarget(target, color, tools) + score)
   }
 }
+
+trait SelectorPiece extends Selector[Piece] {
+  override def selector(controls: MovesStorage)(filterPieceId: PieceId, filterColor: Color): MovesStorage =
+    selectorWithFilter(controls)((pieceId: PieceId, color: Color) => filterPieceId == pieceId && filterColor == color)
+
+  override def selectorMultiple(controls: MovesStorage)(filterPieceId: Seq[PieceId], filterColor: Color): MovesStorage =
+    selectorWithFilter(controls)((pieceId: PieceId, color: Color) => filterPieceId.contains(pieceId) && filterColor == color)
+
+  override def selectorWithFilter(controls: MovesStorage)(filter: (PieceId, Color) => Boolean): MovesStorage = {
+    controls.filterK {
+      case k: Piece if filter(k.id, k.color) => true
+      case _ => false
+    }
+  }
+}
+
+object Score extends ScoreGen[Piece] with SelectorPiece

@@ -1,7 +1,7 @@
 package model.data
 
 import config.ConfigurationChessboard.CurrentMoveStoragePiece
-import model.Chessboard.MovesStorage
+import config.ConfigurationChessboard.MovesStorage
 import model.Piece._
 import model._
 import model.data.PiecesData.emptyPieceBoardStorage

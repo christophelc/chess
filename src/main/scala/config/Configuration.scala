@@ -1,6 +1,5 @@
 package config
 
-import model.Chessboard.MovesStorage
 import model.Piece.PieceId
 import model.{ ChessboardInit, GenericMove, Piece, Pieces }
 import model.data.{ PiecesInitStoragePieceBoard, PiecesInitStoragePieceMap, PiecesInitStoragePieceSeq, PiecesStoragePiece, StorageMap, StorageSeq }
@@ -10,26 +9,27 @@ trait Configuration
 //////////////////////////////
 // Move Storage
 trait ConfigurationMoveStorage {
-  def emptyMove: MovesStorage
+  def emptyMove: ConfigurationChessboard.MovesStorage
 }
 
 trait ConfigurationMoveStorageAsMap extends ConfigurationMoveStorage {
-  override def emptyMove: MovesStorage = StorageMap.EmptyMoveStorage
+  override def emptyMove: ConfigurationChessboard.MovesStorage = StorageMap.EmptyMoveStorage
 }
 
 trait ConfigurationMoveStorageAsSeqPiece extends ConfigurationMoveStorage {
-  override def emptyMove: MovesStorage = StorageSeq[Piece, GenericMove](partition = (move: GenericMove) => move.piece)
+  override def emptyMove: ConfigurationChessboard.MovesStorage =
+    StorageSeq[Piece, GenericMove](partition = (move: GenericMove) => move.piece)
 }
 
 // TODO: Chessboard.MovesStorage is not yet generic
 //trait ConfigurationMoveStorageAsSeqPieceId extends ConfigurationMoveStorage {
-//  override def emptyMove: MovesStorage = StorageSeq[PieceId, GenericMove](partition = (move: GenericMove) => move.piece.id)
+//  override def emptyMove: ConfigurationChessboard.MovesStorage = StorageSeq[PieceId, GenericMove](partition = (move: GenericMove) => move.piece.id)
 //}
 
 /////////////////////////////
 // Piece: Move Storage
 
-trait PieceMoveStorageAsMap extends ConfigurationMoveStorageAsMap
+//trait PieceMoveStorageAsMap extends ConfigurationMoveStorageAsMap
 
 /////////////////////////////
 // Chessboard: Piece Storage

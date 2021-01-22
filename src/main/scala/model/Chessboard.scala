@@ -1,7 +1,8 @@
 package model
 
 import dto.CodecBitmap
-import model.Chessboard.{ EndGame, MovesStorage }
+import model.Chessboard.EndGame
+import config.ConfigurationChessboard.MovesStorage
 import model.Piece.idRook
 import model.data.Storage
 
@@ -69,8 +70,6 @@ trait Chessboard {
 }
 
 object Chessboard {
-  // TODO: make it more generic Storage[K, V]
-  type MovesStorage = Storage[Piece, GenericMove]
   trait EndGame
   case object EndGame50MoveNoTakenPieceNoPawnMove extends EndGame
   case object EndGameByRepetition extends EndGame

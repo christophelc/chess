@@ -1,6 +1,6 @@
 package model
 
-import model.Chessboard.MovesStorage
+import config.ConfigurationChessboard.MovesStorage
 import model.Piece.{ idKing, idPawn }
 import org.specs2.mutable.Specification
 import model.board.RichSquare._

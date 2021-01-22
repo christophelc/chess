@@ -1,6 +1,6 @@
 package model
 
-import model.Chessboard.MovesStorage
+import config.ConfigurationChessboard.MovesStorage
 import model.Piece.PieceId
 import model.data.Storage
 

@@ -1,6 +1,6 @@
 package model
 
-import model.Chessboard.MovesStorage
+import config.ConfigurationChessboard.MovesStorage
 import model.Piece._
 import model.Square.{ row2, row7 }
 

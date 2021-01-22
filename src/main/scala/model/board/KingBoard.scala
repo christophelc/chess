@@ -2,7 +2,7 @@ package model.board
 
 import RichSquare.SquareXYFromString
 import config.ConfigurationChessboard.ConfigurationCurrentPieceBoardPiece
-import model.Chessboard.MovesStorage
+import config.ConfigurationChessboard.MovesStorage
 import model._
 
 object KingBoard {

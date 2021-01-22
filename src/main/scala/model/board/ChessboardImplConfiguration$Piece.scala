@@ -1,7 +1,8 @@
 package model.board
 
 import com.typesafe.scalalogging.LazyLogging
-import model.Chessboard.{ EndGame, MovesStorage }
+import model.Chessboard.EndGame
+import config.ConfigurationChessboard.MovesStorage
 import RichSquare.SquareXYFromString
 import config.ConfigurationChessboard.{ CurrentMoveStoragePiece, ConfigurationCurrentChessboard }
 import model.Square._

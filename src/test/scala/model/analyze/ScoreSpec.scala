@@ -1,6 +1,6 @@
 package model.analyze
 
-import model.Chessboard.MovesStorage
+import config.ConfigurationChessboard.MovesStorage
 import model._
 import model.Piece._
 import org.specs2.mutable.Specification

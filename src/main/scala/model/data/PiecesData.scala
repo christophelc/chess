@@ -1,7 +1,7 @@
 package model.data
 
 import model.Piece
-import model.Piece.{ PieceId, idBishop, idKing, idKnight, idPawn, idQueen, idRook }
+import model.Piece._
 import scala.collection.SeqView
 
 object PiecesData {

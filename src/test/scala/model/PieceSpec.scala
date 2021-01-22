@@ -1,6 +1,6 @@
 package model
 
-import model.Chessboard.MovesStorage
+import config.ConfigurationChessboard.MovesStorage
 import org.specs2.mutable.Specification
 import model.board.RichSquare._
 import model.board._

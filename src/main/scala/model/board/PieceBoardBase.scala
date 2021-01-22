@@ -1,7 +1,7 @@
 package model.board
 
 import config.ConfigurationChessboard.CurrentMoveStoragePiece
-import model.Chessboard.MovesStorage
+import config.ConfigurationChessboard.MovesStorage
 import model._
 
 trait PieceBoardBase extends Piece with CurrentMoveStoragePiece {

@@ -1,7 +1,7 @@
 package model.board
 
 import dto.PieceDto
-import model.Chessboard.MovesStorage
+import config.ConfigurationChessboard.MovesStorage
 import model.GenericMove.{ TagMove, TagsMove, TagsMoveEmpty }
 import model._
 

@@ -1,7 +1,7 @@
 package model.board
 
 import config.ConfigurationChessboard.ConfigurationCurrentPieceBoardPiece
-import model.Chessboard.MovesStorage
+import config.ConfigurationChessboard.MovesStorage
 import model._
 
 case class BishopBoard(
