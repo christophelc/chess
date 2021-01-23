@@ -3,7 +3,7 @@ package dto
 import org.specs2.mutable.Specification
 import model.{ board, _ }
 import model.board.RichSquare._
-import model.board.{ ChessboardImplConfiguration$Piece, KingBoard }
+import model.board.{ ChessboardImpl, KingBoard }
 
 class ChessboardDtoSpec extends Specification {
 
@@ -13,7 +13,7 @@ class ChessboardDtoSpec extends Specification {
       val chessboardDto = ChessboardDto("KA1" + SimpleChessboardCodec.colorSeparator + "KA8")
       val chessboard = codec.decode(chessboardDto)
       val expectedChessboard =
-        ChessboardImplConfiguration$Piece(pieces = ChessboardImplConfiguration$Piece.emptyPieces
+        ChessboardImpl.build(pieces = ChessboardImpl.emptyPieces
           .add(KingBoard(White, "a1".toSquare))
           .add(KingBoard(Black, "a8".toSquare)))
       chessboard must equalTo(expectedChessboard)
@@ -29,7 +29,7 @@ class ChessboardDtoSpec extends Specification {
       val chessboardDto = ChessboardDto(init)
       val chessboard = codec.decode(chessboardDto)
       codec.encode(chessboard).encoded must equalTo(init)
-      chessboard must equalTo(ChessboardImplConfiguration$Piece())
+      chessboard must equalTo(ChessboardImpl())
     }
   }
 
@@ -40,7 +40,7 @@ class ChessboardDtoSpec extends Specification {
       val chessboardDto = ChessboardDto(fen)
       val game = codec.decode(chessboardDto)
       codec.encode(game).encoded must equalTo(fen)
-      game.tools.chessboard must equalTo(ChessboardImplConfiguration$Piece())
+      game.tools.chessboard must equalTo(ChessboardImpl())
     }
 
     "generate a mat in 9 position" in {

@@ -1,18 +1,18 @@
 package model.analyze
 
 import config.ConfigurationChessboard.MovesStorage
-import model.Piece.{ PieceId, idBishop, idKnight, idQueen, idRook, pawnInitialRow }
-import model.{ Chessboard, _ }
+import model.Piece._
+import model._
 import model.analyze.Strategy._
 import model.board._
 
-trait Selector[K] {
+trait Selector {
   def selector(controls: MovesStorage)(id: PieceId, color: Color): MovesStorage
   def selectorMultiple(controls: MovesStorage)(id: Seq[PieceId], color: Color): MovesStorage
   def selectorWithFilter(controls: MovesStorage)(filter: (PieceId, Color) => Boolean): MovesStorage
 }
 
-abstract class ScoreGen[K] extends Selector[K] {
+abstract class ScoreGen extends Selector {
 
   def value(piece: Piece): Int = {
     piece match {
@@ -33,7 +33,7 @@ abstract class ScoreGen[K] extends Selector[K] {
     } else
       0
   }
-  def valuePiece(color: Color, pieces: Pieces): Int =
+  def valuePiece(color: Color, pieces: Pieces[PieceId, Piece]): Int =
     pieces.toSeq.map(piece => if (piece.color == color) value(piece) else -value(piece)).sum
 
   // opening
@@ -118,7 +118,7 @@ abstract class ScoreGen[K] extends Selector[K] {
   }
 }
 
-trait SelectorPiece extends Selector[Piece] {
+trait SelectorPiece extends Selector {
   override def selector(controls: MovesStorage)(filterPieceId: PieceId, filterColor: Color): MovesStorage =
     selectorWithFilter(controls)((pieceId: PieceId, color: Color) => filterPieceId == pieceId && filterColor == color)
 
@@ -133,4 +133,4 @@ trait SelectorPiece extends Selector[Piece] {
   }
 }
 
-object Score extends ScoreGen[Piece] with SelectorPiece
+case object Score extends ScoreGen with SelectorPiece

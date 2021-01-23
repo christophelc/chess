@@ -34,21 +34,21 @@ trait ConfigurationMoveStorageAsSeqPiece extends ConfigurationMoveStorage {
 /////////////////////////////
 // Chessboard: Piece Storage
 
-trait ChessboardInitStoragePieceAsSeq extends ChessboardInit {
+trait ChessboardInitStoragePieceAsSeq extends ChessboardInit[PieceId, Piece] {
   object PiecesStorage extends PiecesInitStoragePieceSeq
-  final val emptyPieces: Pieces = PiecesStorage.emptyPieces
-  def buildPieces(pieces: Seq[Piece]): Pieces = PiecesStorage.buildPieces(pieces)
+  final val emptyPieces: Pieces[PieceId, Piece] = PiecesStorage.emptyPieces
+  def buildPieces(pieces: Seq[Piece]): Pieces[PieceId, Piece] = PiecesStorage.buildPieces(pieces)
 }
 
-trait ChessboardInitStoragePieceAsMap extends ChessboardInit {
+trait ChessboardInitStoragePieceAsMap extends ChessboardInit[PieceId, Piece] {
   object PiecesStorage extends PiecesInitStoragePieceMap
-  final val emptyPieces: Pieces = PiecesStorage.emptyPieces
-  def buildPieces(pieces: Seq[Piece]): Pieces = PiecesStorage.buildPieces(pieces)
+  final val emptyPieces: Pieces[PieceId, Piece] = PiecesStorage.emptyPieces
+  def buildPieces(pieces: Seq[Piece]): Pieces[PieceId, Piece] = PiecesStorage.buildPieces(pieces)
 }
 
-trait ChessboardInitStoragePieceAsBoard extends ChessboardInit {
+trait ChessboardInitStoragePieceAsBoard extends ChessboardInit[PieceId, Piece] {
   object PiecesStorage extends PiecesInitStoragePieceBoard
-  final val emptyPieces: Pieces = PiecesStorage.emptyPieces
-  def buildPieces(pieces: Seq[Piece]): Pieces = PiecesStorage.buildPieces(pieces)
+  final val emptyPieces: Pieces[PieceId, Piece] = PiecesStorage.emptyPieces
+  def buildPieces(pieces: Seq[Piece]): Pieces[PieceId, Piece] = PiecesStorage.buildPieces(pieces)
 }
 

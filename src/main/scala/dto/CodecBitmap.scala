@@ -46,7 +46,7 @@ object CodecBitmap {
           }
         })
     }
-    ChessboardImplConfiguration$Piece(ChessboardImplConfiguration$Piece.buildPieces(pieces))
+    ChessboardImpl.build(ChessboardImpl.buildPieces(pieces))
   }
 }
 

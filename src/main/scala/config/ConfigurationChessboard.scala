@@ -10,7 +10,7 @@ import model.data.Storage
  *  - Piece
  *  - Moves
  *
- *  See [[model.board.ChessboardImplConfiguration$Piece]] and [[model.board.PieceBoardBase]]
+ *  See [[model.board.ChessboardImpl]] and [[model.board.PieceBoardBase]]
  */
 
 // CommonMoveStorage:

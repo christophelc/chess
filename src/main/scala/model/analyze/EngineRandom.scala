@@ -1,6 +1,6 @@
 package model.analyze
 
-import model.board.ChessboardImplConfiguration$Piece
+import model.board.ChessboardImpl
 import model.data.{ Node, Tree }
 import model.{ Color, Tools }
 

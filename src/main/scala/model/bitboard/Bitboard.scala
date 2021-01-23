@@ -1,40 +1,27 @@
 package model.bitboard
 
-import model.Chessboard
-
-import scala.collection.BitSet
+import model._
 
 object Bitboard {
-  type PieceCodec = BitSet
-  val emptyBitboard: PieceCodec = BitSet(0, 0, 0, 0, 0, 0, 0, 0)
-
+  def build(pieces: Seq[Piece]): Bitboard =
+    pieces.foldLeft(Bitboard())((acc, piece) => acc.addPiece(piece))
 }
 
-import Bitboard._
-//case class Bitboard(b: PieceCodec = emptyBitboard)
+case class Bitboard(white: BitboardCodec = BitboardCodec(), black: BitboardCodec = BitboardCodec()) {
 
-//case class BitChessboard(
-//  white: PieceCodec = emptyBitboard,
-//  black: PieceCodec = emptyBitboard,
-//  rooks: PieceCodec = emptyBitboard,
-//  bishops: PieceCodec = emptyBitboard,
-//  knights: PieceCodec = emptyBitboard,
-//  queens: PieceCodec = emptyBitboard,
-//  kings: PieceCodec = emptyBitboard) extends Chessboard {
-//
-//  override val controls: Moves = EmptyMove
-//  override val endGame: Option[EndGame] = None
-//
-//  override def pieces: Pieces
-//  override def findKing(color: Color): Piece
-//  override def get(square: Square): Option[Piece] = pieces.atSquare(square)
-//  override def isAttackedByColor(square: Square, color: Color): Boolean
-//  override def updateControls(logBook: LogBook): Chessboard
-//  override def play(move: GenericMove): Chessboard
-//  override def clear(square: Square): Chessboard
-//  override def +(piece: Piece): Chessboard
-//  override def generateMoveWithControl(color: Color)(logBook: LogBook): MovesWithControl
-//  override def generateMove(color: Color)(logBook: LogBook): Moves
-//  override def withEndGame(endGame: Option[EndGame]): Chessboard
-//
-//}
+  def isEmpty(color: Color)(square: Square): Boolean =
+    color match {
+      case White => white.isEmpty(square)
+      case Black => black.isEmpty(square)
+    }
+
+  def play(move: GenericMove): Bitboard = move.piece.color match {
+    case White => this.copy(white = white.movePiece(move))
+    case Black => this.copy(black = black.movePiece(move))
+  }
+
+  def addPiece(piece: Piece): Bitboard = piece.color match {
+    case White => this.copy(white = white.addPiece(piece.position))
+    case Black => this.copy(black = black.addPiece(piece.position))
+  }
+}

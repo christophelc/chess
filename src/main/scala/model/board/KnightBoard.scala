@@ -9,7 +9,7 @@ case class KnightBoard(
   override val position: Square) extends ConfigurationCurrentPieceBoardPiece with Knight {
 
   override def letsMove(dest: Square): Piece = this.copy(position = dest)
-  override def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesStorage =
+  override def whereToGo(chessboard: Chessboard)(logBook: LogBook)(emptyMove: MovesStorage): MovesStorage =
     moveUnitGenWithControl(chessboard)(Seq(
       Direction.left.left.up,
       Direction.left.left.down,

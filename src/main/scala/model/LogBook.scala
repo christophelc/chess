@@ -24,7 +24,7 @@ import scala.annotation.tailrec
  */
 case class LogBook(
   moves: Seq[GenericMove] = Seq(),
-  initialPosition: Chessboard = ChessboardImplConfiguration$Piece(),
+  initialPosition: Chessboard = ChessboardImpl(),
   val whichPlayerStart: Color = White,
   val smallCastlingForbiddenWhite: Boolean = false,
   val greatCastlingForbiddenWhite: Boolean = false,

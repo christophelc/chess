@@ -4,32 +4,32 @@ import config.ConfigurationChessboard.MovesStorage
 import model.Piece.PieceId
 import model.data.Storage
 
-trait PiecesInit {
-  def emptyPieces: Pieces
-  def buildPieces(pieces: Seq[Piece]): Pieces
+trait PiecesInit[K, V <: Piece] {
+  def emptyPieces: Pieces[K, V]
+  def buildPieces(pieces: Seq[Piece]): Pieces[K, V]
 }
 
-trait Pieces {
-  type Store
-  val store: Storage[PieceId, Piece]
+trait Pieces[K, V <: Piece] {
+  val store: Storage[K, V]
 
+  def clear: Pieces[K, V]
   def emptyMove: MovesStorage
   def toSeq: Seq[Piece]
   def count: Int
-  def union(pieces: Pieces): Pieces
-  def withColor(color: Color): Pieces
+  def union(pieces: Pieces[K, V]): Pieces[K, V]
+  def withColor(color: Color): Pieces[K, V]
   def isEmpty: Boolean
   def nonEmpty: Boolean = !isEmpty
-  def pawns: Pieces
-  def rooks: Pieces
-  def bishops: Pieces
-  def knights: Pieces
-  def queens: Pieces
+  def pawns: Pieces[K, V]
+  def rooks: Pieces[K, V]
+  def bishops: Pieces[K, V]
+  def knights: Pieces[K, V]
+  def queens: Pieces[K, V]
   def king(color: Color): Piece
   def atSquare(square: Square): Option[Piece]
-  def add(piece: Piece): Pieces
-  def sub(piece: Piece): Pieces
-  def sub(pieces: Seq[Piece]): Pieces
+  def add(piece: V): Pieces[K, V]
+  def sub(piece: V): Pieces[K, V]
+  def sub(pieces: Seq[V]): Pieces[K, V]
   def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesStorage
-  def containsSameElementAs(pieces: Pieces): Boolean
+  def containsSameElementAs(pieces: Pieces[K, V]): Boolean
 }

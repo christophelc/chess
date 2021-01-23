@@ -3,13 +3,13 @@ package dto
 import org.specs2.mutable.Specification
 import model.{ Chessboard, _ }
 import model.board.RichSquare._
-import model.board.ChessboardImplConfiguration$Piece
+import model.board.ChessboardImpl
 
 class ChessboardCodecSpec extends Specification {
 
   "Bitmap encoding chessboard" should {
     "be decoded" in {
-      val chessboard: Chessboard = ChessboardImplConfiguration$Piece()
+      val chessboard: Chessboard = ChessboardImpl()
       val encode = CodecBitmap.encode(chessboard)
       val chessboard2: Chessboard = CodecBitmap.decode(encode)
       chessboard2 shouldEqual chessboard
@@ -32,7 +32,7 @@ class ChessboardCodecSpec extends Specification {
 
   "Bitmaps encoding chessboard" should {
     "be decoded" in {
-      val chessboard: Chessboard = ChessboardImplConfiguration$Piece()
+      val chessboard: Chessboard = ChessboardImpl()
       val encode = CodecBitmaps.encode(chessboard)
       val chessboard2: Chessboard = CodecBitmaps.decode(encode)
       chessboard2 shouldEqual chessboard

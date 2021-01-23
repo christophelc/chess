@@ -59,6 +59,7 @@ object Square {
   final val row5 = Row(4)
   final val row6 = Row(2)
   final val row7 = Row(6)
+  final val row8 = Row(7)
   final val colA = Col(0)
   final val colB = Col(1)
   final val colC = Col(2)

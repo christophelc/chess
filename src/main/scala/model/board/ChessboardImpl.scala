@@ -4,11 +4,13 @@ import com.typesafe.scalalogging.LazyLogging
 import model.Chessboard.EndGame
 import config.ConfigurationChessboard.MovesStorage
 import RichSquare.SquareXYFromString
-import config.ConfigurationChessboard.{ CurrentMoveStoragePiece, ConfigurationCurrentChessboard }
+import config.ConfigurationChessboard.{ ConfigurationCurrentChessboard, CurrentMoveStoragePiece }
+import model.Piece.PieceId
 import model.Square._
 import model._
+import model.bitboard.Bitboard
 
-object ChessboardImplConfiguration$Piece extends ConfigurationCurrentChessboard with CurrentMoveStoragePiece {
+object ChessboardImpl extends ConfigurationCurrentChessboard with CurrentMoveStoragePiece {
 
   val pieces: Seq[Piece] =
     Seq(
@@ -37,24 +39,31 @@ object ChessboardImplConfiguration$Piece extends ConfigurationCurrentChessboard 
           SquareXY(row = row7, col = Col(col)))))
       .flatten
 
-  override val emptyChessboard: Chessboard = ChessboardImplConfiguration$Piece(emptyPieces)
-  override val initialState: Pieces = buildPieces(pieces)
+  override val emptyChessboard: Chessboard = ChessboardImpl.build(emptyPieces)
+  override val initialState: Pieces[PieceId, Piece] = buildPieces(pieces)
 
-  def apply(): ChessboardImplConfiguration$Piece = {
-    board.ChessboardImplConfiguration$Piece(initialState)
+  def apply(): ChessboardImpl = {
+    build(pieces = initialState)
   }
+
+  def build(pieces: Pieces[PieceId, Piece]): ChessboardImpl =
+    ChessboardImpl(
+      pieces = pieces,
+      bitboard = None)
+  //bitboard = Some(Bitboard.build(pieces.toSeq)))
 }
 
-import ChessboardImplConfiguration$Piece.emptyMove
+import ChessboardImpl.emptyMove
 
-case class ChessboardImplConfiguration$Piece(
-  override val pieces: Pieces,
-  override val moves: MovesStorage = ChessboardImplConfiguration$Piece.emptyMove,
+case class ChessboardImpl(
+  override val pieces: Pieces[PieceId, Piece],
+  override val moves: MovesStorage = ChessboardImpl.emptyMove,
+  bitboard: Option[Bitboard] = None,
   override val endGame: Option[EndGame] = None) extends Chessboard with LazyLogging {
 
   def +(piece: Piece): Chessboard = {
     require(pieces.atSquare(piece.position).isEmpty)
-    ChessboardImplConfiguration$Piece(pieces = pieces.add(piece))
+    ChessboardImpl(pieces = pieces.add(piece), bitboard = bitboard.map(_.addPiece(piece)))
   }
   override def whoIsAttackingSquare(square: Square, controlsByOtherColor: MovesStorage): Seq[Piece] =
     controlsByOtherColor.toSeq.filter(_.dest == square).map(_.piece)
@@ -62,7 +71,7 @@ case class ChessboardImplConfiguration$Piece(
   override def findKing(color: Color): Piece = {
     pieces.king(color)
   }
-  override def clear(square: Square): ChessboardImplConfiguration$Piece = pieces.atSquare(square) match {
+  override def clear(square: Square): ChessboardImpl = pieces.atSquare(square) match {
     case Some(piece) => this.copy(pieces = pieces.sub(piece))
     case None => this
   }
@@ -124,15 +133,19 @@ case class ChessboardImplConfiguration$Piece(
     def makeMove(move: GenericMove): Chessboard = {
       get(move.dest) match {
         case Some(piece) =>
-          ChessboardImplConfiguration$Piece(pieces =
-            pieces
-              .sub(Seq(piece, move.piece))
-              .add(move.piece.letsMove(move.dest)))
+          ChessboardImpl(
+            pieces =
+              pieces
+                .sub(Seq(piece, move.piece))
+                .add(move.piece.letsMove(move.dest)),
+            bitboard = bitboard.map(_.play(move)))
         case None =>
-          ChessboardImplConfiguration$Piece(pieces =
-            pieces
-              .sub(move.piece)
-              .add(move.piece.letsMove(move.dest)))
+          ChessboardImpl(
+            pieces =
+              pieces
+                .sub(move.piece)
+                .add(move.piece.letsMove(move.dest)),
+            bitboard = bitboard.map(_.play(move)))
       }
     }
     move match {

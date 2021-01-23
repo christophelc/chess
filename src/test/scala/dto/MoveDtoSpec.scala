@@ -1,7 +1,7 @@
 package dto
 
 import dto.MoveDtoSpec.game1
-import model.board.ChessboardImplConfiguration$Piece
+import model.board.ChessboardImpl
 import model.{ LogBook, Tools, White }
 import org.specs2.mutable.Specification
 
@@ -42,7 +42,7 @@ class MoveDtoSpec extends Specification {
   "Multilines moves" should {
     "be completeliy read" in {
       val tools = Tools(
-        chessboard = ChessboardImplConfiguration$Piece(),
+        chessboard = ChessboardImpl(),
         logBook = LogBook())
       val moves = MoveDto.encodeMultiline(tools, game1)
       moves.map(_.size) shouldEqual Right(game1.split("""\n""").length * 2)

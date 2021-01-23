@@ -56,7 +56,7 @@ trait PieceBoardBase extends Piece with CurrentMoveStoragePiece {
     checkMoveInsideChessboard(move)
   }
 
-  def moveMulGenWithControl(chessboard: Chessboard)(directions: Seq[Direction]): MovesStorage = {
+  def moveMulGenWithControl(chessboard: Chessboard)(emptyMove: MovesStorage)(directions: Seq[Direction]): MovesStorage = {
     def moveMulWithControl(chessboard: Chessboard)(directionUnit: Direction): MovesStorage = {
       def _moveMul(chessboard: Chessboard)(direction: Direction): MovesStorage = {
         moveUnitWithoutControl(chessboard)(direction) match {

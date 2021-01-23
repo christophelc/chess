@@ -9,8 +9,8 @@ case class QueenBoard(
   override val position: Square) extends ConfigurationCurrentPieceBoardPiece with Queen {
 
   override def letsMove(dest: Square): Piece = this.copy(position = dest)
-  override def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesStorage =
-    moveMulGenWithControl(chessboard)(Seq(
+  override def whereToGo(chessboard: Chessboard)(logBook: LogBook)(emptyMove: MovesStorage): MovesStorage =
+    moveMulGenWithControl(chessboard)(emptyMove: MovesStorage)(Seq(
       Direction.left,
       Direction.right,
       Direction.up,

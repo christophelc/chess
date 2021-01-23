@@ -19,7 +19,7 @@ case class KingBoard(
   override val position: Square) extends ConfigurationCurrentPieceBoardPiece with King {
 
   override def letsMove(dest: Square): Piece = this.copy(position = dest)
-  override def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesStorage = {
+  override def whereToGo(chessboard: Chessboard)(logBook: LogBook)(emptyMove: MovesStorage): MovesStorage = {
     val smallCastling: Option[GenericMove] = if (chessboard.canSmallCastling(logBook, king = this))
       moveUnitWithoutControl(chessboard)(Direction.right).flatMap(_ =>
         chessboard.get(this.position.right.right.right).flatMap(rook =>

@@ -1,12 +1,12 @@
 package model
 
-import model.board.ChessboardImplConfiguration$Piece
+import model.board.ChessboardImpl
 
 case class ChessGame(
   playerBlack: Player,
   playerWhite: Player,
   whichPlayerTurn: Color = White,
-  val tools: Tools = Tools(chessboard = ChessboardImplConfiguration$Piece(), logBook = LogBook()),
+  val tools: Tools = Tools(chessboard = ChessboardImpl(), logBook = LogBook()),
   timer: Timer) {
 
   def name: String = s"${playerWhite.name}-${playerBlack.name}"

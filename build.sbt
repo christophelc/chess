@@ -15,6 +15,9 @@ scalacOptions ++= Seq(
   "-language:postfixOps"
 )
 
-libraryDependencies += akka
+libraryDependencies ++= Seq(
+  akka,
+  cats
+)
 libraryDependencies ++= logger
 libraryDependencies ++= testLib

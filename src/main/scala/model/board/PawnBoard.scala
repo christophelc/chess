@@ -34,7 +34,7 @@ case class PawnBoard(
       takenPiece = chessboard.get(move.dest),
       tags = move.tags ++ isMove))
 
-  override def whereToGo(chessboard: Chessboard)(logBook: LogBook): MovesStorage = {
+  override def whereToGo(chessboard: Chessboard)(logBook: LogBook)(emptyMove: MovesStorage): MovesStorage = {
 
     val (verticalDirection, pawnInitialRow) = (Piece.verticalDirection(color), Piece.pawnInitialRow(color))
     val diagonalLeft = verticalDirection.left
